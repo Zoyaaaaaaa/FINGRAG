@@ -1,0 +1,109 @@
+industry_group,industry,sector,stock_code,company_name,key_players,chinese_presence_level,risk_exposure
+EV_Ecosystem,EV_Batteries,Energy,RELIANCE,Reliance Industries,CATL_Collaboration,Medium,Moderate
+EV_Ecosystem,EV_Manufacturing,Automotive,ADANI,Adani Group,BYD_Talks,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,JSW,JSW Group,Chery_Deal,High,High
+EV_Ecosystem,EV_Batteries,Energy,TATAMOTORS,Tata Motors,AESC_JV,High,High
+Consumer_Durables,Appliances,Retail,BHARTI,Bharti Enterprises,Haier_JV,High,High
+Consumer_Durables,Appliances,Retail,HAIER,Haier India,Haier_Group,High,High
+Industrial_Equipment,Construction,Industrial,SANY,Sany Heavy Industry,Sany_Group,High,High
+Technology,IT_Services,Technology,TCS,Tata Consultancy Services,Operations_in_China,Medium,Moderate
+EV_Ecosystem,EV_Manufacturing,Automotive,MG,SAIC Motor India,SAIC_JV,High,High
+Industrial_Equipment,Construction_Equipment,Industrial,MAHINDRA,Mahindra & Mahindra,Operations_in_China,Medium,Moderate
+Technology,IT_Training,Education,NIIT,NIIT,Operations_in_China,Low,Low
+Technology,Telecom,Technology,HUAWEI,Huawei India,Huawei_R&D,High,High
+Technology,Consumer_Electronics,Retail,LENOVO,Lenovo India,Lenovo_Operations,Medium,Moderate
+Consumer_Services,Food_Tech,Consumer,ZOMATO,Zomato,Technology_Partnership,Low,Low
+Electronics,Manufacturing,Manufacturing,DIXON,Dixon Technologies,Vivo_Longcheer_Qtech_JV,High,High
+EV_Ecosystem,EV_Batteries,Energy,ASHOKLEY,Ashok Leyland,CALB_Group_Agreement,Medium,Moderate
+Automotive,Components,Manufacturing,SONABLW,Sona BLW,Jinnaite_Machinery_Abeyance,Medium,Moderate
+Pharmaceuticals,Healthcare,Healthcare,SUNPHARMA,Sun Pharma,China_Medical_System_Distribution,Medium,Moderate
+Pharmaceuticals,Healthcare,Healthcare,CIPLA,Cipla,Kidd_Pharma_JV,Medium,Moderate
+Pharmaceuticals,Healthcare,Healthcare,DRREDDY,Dr Reddy's Laboratories,Kunshan_Rotam_Reddy_Distribution,Medium,Moderate
+Automotive,Components,Manufacturing,MOTHERSON,Samvardhana Motherson,JMCG_JV,Medium,Moderate
+Automotive,Components,Manufacturing,UNOMINDA,Uno Minda,Shenyang_Jiuan_Auto_Lamp_JV,Medium,Moderate
+Pharmaceuticals,Healthcare,Healthcare,AUROPHARMA,Aurobindo Pharma,Luoxin_Auroviris_JV,Medium,Moderate
+Pharmaceuticals,Healthcare,Healthcare,GLENMARK,Glenmark Pharma,Harbour_BioMed_Research,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,HEROMOTOCO,Hero MotoCorp,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,BAJAJ-AUTO,Bajaj Auto,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,TVSMOTOR,TVS Motor,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,EICHERMOT,Eicher Motors,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,MARUTI,Maruti Suzuki,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,HYUNDAI,Hyundai India,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,KIA,Kia India,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,VOLVO,Volvo India,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,BMW,BMW India,Component_Sourcing,Medium,Moderate
+Automotive,Manufacturing,Manufacturing,MERCEDES,Mercedes-Benz India,Component_Sourcing,Medium,Moderate
+Electronics,Manufacturing,Manufacturing,FOXCONN,Foxconn India,Foxconn_R&D,High,High
+Consumer_Electronics,Retail,Retail,XIAOMI,Xiaomi India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,OPPO,Oppo India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,VIVO,Vivo India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,ONEPLUS,OnePlus India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,REALME,Realme India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,TECNO,Tecno India,Full_Operations,High,High
+Consumer_Electronics,Retail,Retail,INFINIX,Infinix India,Full_Operations,High,High
+E-commerce,Technology,Technology,ALIBABA,Alibaba India,Alibaba_R&D,Medium,Moderate
+Technology,Investment,Technology,TENCENT,Tencent India,Tencent_Investment,Medium,Moderate
+EV_Ecosystem,EV_Manufacturing,Automotive,BYD,BYD India,Full_Operations,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,GWM,Great Wall Motors India,Operations_Paused,High,High
+Telecom,Technology,Technology,ZTE,ZTE India,Full_Operations,High,High
+Electronics,Security,Technology,HIKVISION,Hikvision India,Hikvision_R&D,High,High
+Electronics,Security,Technology,DAHUA,Dahua India,Dahua_R&D,High,High
+Electronics,Drones,Technology,DJI,DJI India,DJI_R&D,High,High
+Social_Media,Technology,Technology,TIKTOK,TikTok India,Operations_Banned,High,High
+E-commerce,Retail,Retail,SHEIN,Shein India,Operations_Banned,High,High
+E-commerce,Retail,Retail,CLUBFACTORY,Club Factory,Operations_Banned,High,High
+E-commerce,Retail,Retail,ROMWE,Romwe,Operations_Banned,High,High
+Social_Media,Technology,Technology,SHARECHAT,ShareChat,Chinese_Investment,Medium,Moderate
+News,Technology,Technology,DAILYHUNT,DailyHunt,Chinese_Investment,Medium,Moderate
+E-commerce,Retail,Retail,MEESHO,Meesho,Chinese_Investment,Medium,Moderate
+E-commerce,Retail,Retail,LENSKART,Lenskart,Chinese_Investment,Medium,Moderate
+EV_Ecosystem,EV_Manufacturing,Automotive,OLAELECTRIC,Ola Electric,Chinese_Sourcing,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,ATHER,Ather Energy,Chinese_Sourcing,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,AMPERE,Ampere Vehicles,Chinese_Sourcing,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,BAJAJ_EV,Bajaj Auto,Chinese_Sourcing,High,High
+EV_Ecosystem,EV_Manufacturing,Automotive,HERO_ELECTRIC,Hero Electric,Chinese_Sourcing,High,High
+Chemicals,Specialty,Industrial,CABOT,Cabot India,Cabot_China_JV,Medium,Moderate
+Chemicals,Specialty,Industrial,BASF,BASF India,BASF_China_JV,Medium,Moderate
+Chemicals,Specialty,Industrial,ATUL,Atul Ltd,Chinese_Imports,Medium,Moderate
+Chemicals,Specialty,Industrial,AARTI,Aarti Industries,Chinese_Imports,Medium,Moderate
+Chemicals,Specialty,Industrial,DEEPAKNITR,Deepak Nitrite,Chinese_Imports,Medium,Moderate
+Chemicals,Specialty,Industrial,SRF,SRF Ltd,Chinese_Imports,Medium,Moderate
+Chemicals,Specialty,Industrial,GUJFLUORO,Gujarat Fluorochemicals,Chinese_Imports,Medium,Moderate
+Chemicals,Specialty,Industrial,NAVINFLUOR,Navin Fluorine,Chinese_Imports,Medium,Moderate
+Steel,Manufacturing,Industrial,TATASTEEL,Tata Steel,Coking_Coal_Imports,High,High
+Steel,Manufacturing,Industrial,JSWSTEEL,JSW Steel,Coking_Coal_Imports,High,High
+Steel,Manufacturing,Industrial,JINDALSTEL,Jindal Steel,Coking_Coal_Imports,High,High
+Steel,Manufacturing,Industrial,ARCELORMITTAL,ArcelorMittal Nippon,Coking_Coal_Imports,High,High
+Steel,Manufacturing,Industrial,SAIL,SAIL,Equipment_Imports,Medium,Moderate
+Energy,Infrastructure,Infrastructure,POWERGRID,Power Grid Corporation,Equipment_Imports,Medium,Moderate
+Energy,Infrastructure,Infrastructure,NTPC,NTPC,Solar_Equipment_Imports,High,High
+Energy,Infrastructure,Infrastructure,ADANIGREEN,Adani Green Energy,Solar_Equipment_Imports,High,High
+Energy,Infrastructure,Infrastructure,TATAPOWER,Tata Power,Solar_Equipment_Imports,High,High
+Energy,Infrastructure,Infrastructure,RENEW,ReNew Power,Solar_Equipment_Imports,High,High
+Telecom,Equipment,Technology,STLTECH,Sterlite Technologies,Optical_Fiber_Imports,Medium,Moderate
+Telecom,Equipment,Technology,HFCL,HFCL,Equipment_Imports,Medium,Moderate
+Telecom,Equipment,Technology,TEJASNET,Tejas Networks,Component_Imports,Medium,Moderate
+Defense,Equipment,Industrial,BEL,Bharat Electronics,Component_Imports,Medium,Moderate
+Defense,Aerospace,Industrial,HAL,Hindustan Aeronautics,Component_Imports,Medium,Moderate
+Shipbuilding,Manufacturing,Industrial,COCHINSHIP,Cochin Shipyard,Equipment_Imports,Medium,Moderate
+Shipbuilding,Manufacturing,Industrial,MAZAGON,Mazagon Dock,Equipment_Imports,Medium,Moderate
+Shipbuilding,Manufacturing,Industrial,GRSE,Garden Reach Shipbuilders,Equipment_Imports,Medium,Moderate
+Infrastructure,Construction,Construction,LT,L&T,Equipment_Imports,Medium,Moderate
+Infrastructure,Construction,Construction,GAMMON,Gammon India,Equipment_Imports,Medium,Moderate
+Infrastructure,Construction,Construction,PUNJLLOYD,Punj Lloyd,Equipment_Imports,Medium,Moderate
+Infrastructure,Construction,Construction,IRB,IRB Infrastructure,Equipment_Imports,Medium,Moderate
+Batteries,Manufacturing,Energy,STARLIT,Starlit Power Systems,Guangdong_Dynavolt_JV,High,High
+Media,Entertainment,Entertainment,SUNTV,Sun TV Network,Content_Licensing,Low,Low
+Media,Entertainment,Entertainment,ZEEL,Zee Entertainment,Content_Licensing,Low,Low
+Media,Cinema,Entertainment,PVR,PVR INOX,Content_Licensing,Low,Low
+Media,Cinema,Entertainment,INOX,INOX Leisure,Content_Licensing,Low,Low
+Healthcare,Hospitals,Healthcare,FORTIS,Fortis Healthcare,Medical_Equipment_Imports,Medium,Moderate
+Healthcare,Hospitals,Healthcare,APOLLO,Apollo Hospitals,Medical_Equipment_Imports,Medium,Moderate
+Healthcare,Hospitals,Healthcare,MAXHEALTH,Max Healthcare,Medical_Equipment_Imports,Medium,Moderate
+Healthcare,Hospitals,Healthcare,NARAYANA,Narayana Health,Medical_Equipment_Imports,Medium,Moderate
+Pharmaceuticals,Manufacturing,Healthcare,MANKIND,Mankind Pharma,API_Imports,High,High
+Pharmaceuticals,Manufacturing,Healthcare,TORRENT,Torrent Pharma,API_Imports,High,High
+Pharmaceuticals,Manufacturing,Healthcare,LUPIN,Lupin,API_Imports,High,High
+Pharmaceuticals,Manufacturing,Healthcare,CADILA,Cadila Healthcare,API_Imports,High,High
+Pharmaceuticals,Biotechnology,Healthcare,BIOCON,Biocon,API_Imports,High,High
+Pharmaceuticals,Manufacturing,Healthcare,DIVISLAB,Divis Laboratories,API_Imports,High,High

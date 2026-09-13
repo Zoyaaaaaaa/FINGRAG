@@ -1,0 +1,109 @@
+company_code,company_name,industry,sector,exchange,country_of_origin,indian_status,chinese_partner,relationship_type
+RELIANCE,Reliance Industries,EV_Batteries,Energy,NSE/BSE,India,Operating,CATL,Technology_Partnership
+ADANI,Adani Group,Conglomerate,Infrastructure,NSE/BSE,India,Operating,BYD,JV_Discussion
+JSW,JSW Group,Automotive,Manufacturing,NSE/BSE,India,Operating,Chery_SAIC,Technology_Licensing
+TATAMOTORS,Tata Motors,Automotive,Manufacturing,NSE/BSE,India,Operating,Chery_AESC,Platform_Licensing
+BHARTI,Bharti Enterprises,Consumer_Electronics,Retail,NSE/BSE,India,Operating,Haier,49_Pct_JV
+HAIER,Haier India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Haier_Group,49_Retained
+SANY,Sany Heavy Industry,Construction_Equipment,Industrial,NSE/BSE,China,Operating,Sany_Group,Subsidiary
+MG,SAIC Motor India,Automotive,Manufacturing,NSE/BSE,China,Operating,SAIC,JV
+TCS,Tata Consultancy Services,IT_Services,Technology,NSE/BSE,India,Expanding,Multiple,Operations_in_China
+MAHINDRA,Mahindra & Mahindra,Tractors,Manufacturing,NSE/BSE,India,Operating,Multiple,Operations_in_China
+NIIT,NIIT,IT_Training,Education,NSE/BSE,India,Operating,Multiple,Operations_in_China
+HUAWEI,Huawei India,Telecom,Technology,NSE/BSE,China,Operating,Huawei,R&D_Center
+LENOVO,Lenovo India,Technology,Retail,NSE/BSE,China,Operating,Lenovo,Operations
+ZOMATO,Zomato,Food_Tech,Consumer,NSE/BSE,India,Operating,Multiple,Technology_Partnership
+DIXON,Dixon Technologies,Electronics,Manufacturing,NSE/BSE,India,Operating,Vivo_Longcheer_Qtech,JV
+ASHOKLEY,Ashok Leyland,EV_Batteries,Energy,NSE/BSE,India,Operating,CALB_Group,Technology_Agreement
+SONABLW,Sona BLW,Automotive,Manufacturing,NSE/BSE,India,Operating,Jinnaite_Machinery,JV_Abeyance
+SUNPHARMA,Sun Pharma,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,China_Medical_System,Distribution
+CIPLA,Cipla,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Kidd_Pharma,JV_Completed
+DRREDDY,Dr Reddy's Laboratories,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Kunshan_Rotam_Reddy,Distribution
+MOTHERSON,Samvardhana Motherson,Automotive,Manufacturing,NSE/BSE,India,Operating,JMCG,JV
+UNOMINDA,Uno Minda,Automotive,Manufacturing,NSE/BSE,India,Operating,Shenyang_Jiuan_Auto_Lamp,JV
+AUROPHARMA,Aurobindo Pharma,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Luoxin_Auroviris,JV
+GLENMARK,Glenmark Pharma,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Harbour_BioMed,Research_Partnership
+HEROMOTOCO, Hero MotoCorp,Automotive,Manufacturing,NSE/BSE,India,Operating,Multiple,Sourcing
+BAJAJ-AUTO,Bajaj Auto,Automotive,Manufacturing,NSE/BSE,India,Operating,Multiple,Sourcing
+TVSMOTOR,TVS Motor,Automotive,Manufacturing,NSE/BSE,India,Operating,Multiple,Sourcing
+EICHERMOT,Eicher Motors,Automotive,Manufacturing,NSE/BSE,India,Operating,Multiple,Sourcing
+MARUTI,Maruti Suzuki,Automotive,Manufacturing,NSE/BSE,India,Operating,Multiple,Sourcing
+HYUNDAI,Hyundai India,Automotive,Manufacturing,NSE/BSE,Korea,Operating,Multiple,Sourcing
+KIA,Kia India,Automotive,Manufacturing,NSE/BSE,Korea,Operating,Multiple,Sourcing
+VOLVO,Volvo India,Automotive,Manufacturing,NSE/BSE,Sweden,Operating,Multiple,Sourcing
+BMW,BMW India,Automotive,Manufacturing,NSE/BSE,Germany,Operating,Multiple,Sourcing
+MERCEDES,Mercedes-Benz India,Automotive,Manufacturing,NSE/BSE,Germany,Operating,Multiple,Sourcing
+FOXCONN,Foxconn India,Electronics,Manufacturing,NSE/BSE,Taiwan,Operating,Foxconn,R&D_Center
+XIAOMI,Xiaomi India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Xiaomi,Operations
+OPPO,Oppo India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Oppo,Operations
+VIVO,Vivo India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Vivo,Operations
+ONEPLUS,OnePlus India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,OnePlus,Operations
+REALME,Realme India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Realme,Operations
+TECNO,Tecno India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Tecno,Operations
+INFINIX,Infinix India,Consumer_Electronics,Retail,NSE/BSE,China,Operating,Infinix,Operations
+ALIBABA,Alibaba India,E-commerce,Technology,NSE/BSE,China,Operating,Alibaba_Group,R&D_Center
+TENCENT,Tencent India,Technology,Technology,NSE/BSE,China,Operating,Tencent,Investment
+BYD,BYD India,EV_Manufacturing,Automotive,NSE/BSE,China,Operating,BYD,Operations
+GWM,Great Wall Motors India,EV_Manufacturing,Automotive,NSE/BSE,China,Inactive,GWM,Operations_Paused
+ZTE,ZTE India,Telecom,Technology,NSE/BSE,China,Operating,ZTE,Operations
+HIKVISION,Hikvision India,Electronics,Technology,NSE/BSE,China,Operating,Hikvision,R&D_Center
+DAHUA,Dahua India,Electronics,Technology,NSE/BSE,China,Operating,Dahua,R&D_Center
+DJI,DJI India,Drones,Technology,NSE/BSE,China,Operating,DJI,R&D_Center
+TIKTOK,TikTok India,Social_Media,Technology,NSE/BSE,China,Inactive,ByteDance,Operations_Banned
+SHEIN,Shein India,E-commerce,Retail,NSE/BSE,China,Inactive,Shein,Operations_Banned
+CLUBFACTORY,Club Factory,E-commerce,Retail,NSE/BSE,China,Inactive,Club_Factory,Operations_Banned
+ROMWE,Romwe,E-commerce,Retail,NSE/BSE,China,Inactive,Romwe,Operations_Banned
+SHARECHAT,ShareChat,Social_Media,Technology,NSE/BSE,India,Operating,Shunwei_Capital,Investment
+DAILYHUNT,DailyHunt,News,Technology,NSE/BSE,India,Operating,Multiple,Investment
+MEESHO,Meesho,E-commerce,Retail,NSE/BSE,India,Operating,Sequoia_China,Investment
+LENSKART,Lenskart,E-commerce,Retail,NSE/BSE,India,Operating,Multiple,Investment
+OLAELECTRIC,Ola Electric,EV_Manufacturing,Automotive,NSE/BSE,India,Operating,Multiple,Sourcing
+ATHER,Ather Energy,EV_Manufacturing,Automotive,NSE/BSE,India,Operating,Multiple,Sourcing
+AMPERE,Ampere Vehicles,EV_Manufacturing,Automotive,NSE/BSE,India,Operating,Multiple,Sourcing
+BAJAJ_EV,Bajaj Auto,EV_Manufacturing,Automotive,NSE/BSE,India,Operating,Multiple,Sourcing
+HERO_ELECTRIC,Hero Electric,EV_Manufacturing,Automotive,NSE/BSE,India,Operating,Multiple,Sourcing
+CABOT,Cabot India,Chemicals,Industrial,NSE/BSE,US,Operating,Cabot_China,JV
+BASF,BASF India,Chemicals,Industrial,NSE/BSE,Germany,Operating,BASF_China,JV
+ATUL,Atul Ltd,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+AARTI,Aarti Industries,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+DEEPAKNITR,Deepak Nitrite,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+SRF,SRF Ltd,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+GUJFLUORO,Gujarat Fluorochemicals,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+NAVINFLUOR,Navin Fluorine,Chemicals,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+TATASTEEL,Tata Steel,Steel,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+JSWSTEEL,JSW Steel,Steel,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+JINDALSTEL,Jindal Steel,Steel,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+ARCELORMITTAL,ArcelorMittal Nippon,Steel,Industrial,NSE/BSE,Global,Operating,Multiple,Sourcing
+SAIL,SAIL,Steel,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+POWERGRID,Power Grid Corporation,Energy,Infrastructure,NSE/BSE,India,Operating,Multiple,Sourcing
+NTPC,NTPC,Energy,Infrastructure,NSE/BSE,India,Operating,Multiple,Sourcing
+ADANIGREEN,Adani Green Energy,Energy,Infrastructure,NSE/BSE,India,Operating,Multiple,Sourcing
+TATAPOWER,Tata Power,Energy,Infrastructure,NSE/BSE,India,Operating,Multiple,Sourcing
+RENEW,ReNew Power,Energy,Infrastructure,NSE/BSE,India,Operating,Multiple,Sourcing
+STLTECH,Sterlite Technologies,Telecom,Technology,NSE/BSE,India,Operating,Multiple,Sourcing
+HFCL,HFCL,Telecom,Technology,NSE/BSE,India,Operating,Multiple,Sourcing
+TEJASNET,Tejas Networks,Telecom,Technology,NSE/BSE,India,Operating,Multiple,Sourcing
+BEL,Bharat Electronics,Defense,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+HAL,Hindustan Aeronautics,Defense,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+COCHINSHIP,Cochin Shipyard,Shipbuilding,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+MAZAGON,Mazagon Dock,Shipbuilding,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+GRSE,Garden Reach Shipbuilders,Shipbuilding,Industrial,NSE/BSE,India,Operating,Multiple,Sourcing
+LT,L&T,Infrastructure,Construction,NSE/BSE,India,Operating,Multiple,Sourcing
+GAMMON,Gammon India,Infrastructure,Construction,NSE/BSE,India,Operating,Multiple,Sourcing
+PUNJLLOYD,Punj Lloyd,Infrastructure,Construction,NSE/BSE,India,Operating,Multiple,Sourcing
+IRB,IRB Infrastructure,Infrastructure,Construction,NSE/BSE,India,Operating,Multiple,Sourcing
+STARLIT,Starlit Power Systems,Batteries,Energy,NSE/BSE,India,Operating,Guangdong_Dynavolt,JV
+SUNTV,Sun TV Network,Media,Entertainment,NSE/BSE,India,Operating,Multiple,Content_Licensing
+ZEEL,Zee Entertainment,Media,Entertainment,NSE/BSE,India,Operating,Multiple,Content_Licensing
+PVR,PVR INOX,Cinema,Entertainment,NSE/BSE,India,Operating,Multiple,Content_Licensing
+INOX,INOX Leisure,Cinema,Entertainment,NSE/BSE,India,Operating,Multiple,Content_Licensing
+FORTIS,Fortis Healthcare,Healthcare,Healthcare,NSE/BSE,India,Operating,Multiple,Medical_Sourcing
+APOLLO,Apollo Hospitals,Healthcare,Healthcare,NSE/BSE,India,Operating,Multiple,Medical_Sourcing
+MAXHEALTH,Max Healthcare,Healthcare,Healthcare,NSE/BSE,India,Operating,Multiple,Medical_Sourcing
+NARAYANA,Narayana Health,Healthcare,Healthcare,NSE/BSE,India,Operating,Multiple,Medical_Sourcing
+MANKIND,Mankind Pharma,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing
+TORRENT,Torrent Pharma,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing
+LUPIN,Lupin,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing
+CADILA,Cadila Healthcare,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing
+BIOCON,Biocon,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing
+DIVISLAB,Divis Laboratories,Pharmaceuticals,Healthcare,NSE/BSE,India,Operating,Multiple,Sourcing

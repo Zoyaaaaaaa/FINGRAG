@@ -1,0 +1,49 @@
+# FinGraphRAG NeMo Guardrails config — GEMINI ONLY (no OpenAI).
+# Compatible with: pip install "nemoguardrails[google]" + langchain-google-genai
+# Run with NeMo (Python 3.10–3.13):
+#   NEMOGUARDRAILS_LLM_FRAMEWORK=langchain nemoguardrails chat --config src/guardrails_config
+# Our app ALSO ships a lightweight Gemini-backed runtime (src/guardrails/fin_guardrails.py)
+# that enforces the same rails.co without requiring NeMo on Python 3.14.
+
+models:
+  # Main + topical-reasoning model — single Gemini model for everything.
+  - type: main
+    engine: google_genai
+    model: gemini-3-flash-preview
+    api_key_env_var: GOOGLE_API_KEY
+    parameters:
+      temperature: 0.1
+      max_tokens: 1000
+
+rails:
+  # Dialog rails execute the Colang flows in rails.co.
+  # single_call disabled on purpose so you can SEE each step
+  # (user canonical form -> flow match -> bot action) in the Streamlit panel.
+  dialog:
+    single_call:
+      enabled: false
+    user_messages:
+      embeddings_only: false
+    bot_messages:
+      embeddings_only: false
+
+  input:
+    flows:
+      - handle off topic
+      - handle financial question
+
+  output:
+    flows: []
+
+config:
+  instructions:
+    - content: |
+        You are FinGraphRAG, a financial research assistant.
+        ONLY answer questions about Indian companies and their Chinese partners,
+        deal types, sectors, industries, and risk exposure covered by the
+        knowledge base (stock_company.csv, stock_report.csv,
+        Stock_industry_grouped_w_code.csv).
+        For anything else, trigger the `ask off topic` canonical form so the
+        `handle off topic` flow refuses politely.
+  colang_version: "1.0"
+  streaming: false

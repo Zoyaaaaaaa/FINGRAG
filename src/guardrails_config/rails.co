@@ -1,0 +1,48 @@
+# FinGraphRAG topical rails — Colang v1.0 (NeMo Guardrails compatible)
+# Mirrors the whiteboard pattern in your screenshot, but scoped to OUR data:
+# Indian companies x Chinese partners (stock_company.csv / stock_report.csv /
+# Stock_industry_grouped_w_code.csv) served by Neo4j + Qdrant + Gemini.
+#
+# How to read this file (same as your image):
+#   define user ...   -> canonical forms the user can utter
+#   define bot ...    -> canned bot messages / actions
+#   define flow ...   -> dialog path: user event -> bot action -> stop/continue
+
+define user ask off topic
+  "tell me a joke"
+  "what is the capital of france"
+  "write me a poem"
+  "what is 2 plus 2"
+  "what should I eat for dinner"
+  "who won the game yesterday"
+  "recommend a movie"
+  "what is the weather like"
+  "who won the election"
+  "write python code to sort a list"
+
+define user ask financial question
+  "What is the partnership structure between Bharti Enterprises and Haier?"
+  "What are the relationships between Reliance Industries and CATL?"
+  "Tell me about Adani Group and BYD"
+  "What is the deal between Tata Motors and Chery?"
+  "How much stake does SAIC own in JSW MG Motor India?"
+  "Which Indian companies partner with CATL?"
+  "What is the risk exposure for Consumer Durables with Haier_JV?"
+  "Show me revenue for Sany Heavy Industry"
+
+define bot refuse off topic
+  "I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance–CATL, Bharti–Haier, Adani–BYD, Tata–Chery). I can't help with that — ask me about a company, partner, deal type, or sector from the knowledge base!"
+
+define bot answer financial question
+  "Routing to FinGraphRAG hybrid retrieval (Neo4j graph + Qdrant vectors + Gemini synthesis)."
+
+define flow handle off topic
+  user ask off topic
+  bot refuse off topic
+  stop
+
+define flow handle financial question
+  user ask financial question
+  bot answer financial question
+  execute financial_rag
+  stop
