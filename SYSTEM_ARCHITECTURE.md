@@ -1,297 +1,196 @@
-# FinGraphRAG System Architecture — Current Implementation (Sep 2026)
+# FinGraphRAG — System Architecture (Current)
 
-## Overview
-FinGraphRAG is a hybrid RAG system for **Indian companies × Chinese partners**. It answers strictly from your CSV knowledge base (`src/data/stock_company.csv`, `src/data/stock_report.csv`, `src/data/Stock_industry_grouped_w_code.csv`) using:
+## 1. Overview
+Hybrid RAG for **Indian companies × Chinese partners**. Answers only from the CSV knowledge base
+`stock_company.csv` / `stock_report.csv` / `Stock_industry_grouped_w_code.csv`.
 
-* **Neo4j** — structured entity graph (`FinancialEntity` nodes, 316 records, `company_name`/`company_code`/`chinese_partner`/`relationship_type` etc.)
-* **Qdrant** — dense vectors (`gemini-embedding-001`, 3072-d, cosine, collection `graphragfin` / `financial_documents`, 532 points)
-* **Gemini** — LLM synthesis (`gemini-3-flash-preview` via `langchain-google-genai`, temperature 0.1) + topical guardrails
-* **LangGraph** — stateful workflow engine; **LangSmith** tracing optional
+| Layer | Tech | Live state |
+|-------|------|------------|
+| Graph | **Neo4j Aura** `neo4j+s://5a76f90e.databases.neo4j.io` | **629 nodes** (316 `FinancialEntity` legacy + 313 `Company`) · **105 typed edges** (PARTNERS_WITH 60 … HAS_STAKE_IN 4) |
+| Vector | **Qdrant Cloud** `graphragfin` | **532 points** · `gemini-embedding-001` 3072-d · cosine |
+| LLM | **Gemini** `gemini-3-flash-preview` | temp 0.1 + extractive 429 fallback |
+| Orchestrator | **LangGraph** | guard → understand → retrieve → build_context → synthesize |
+| Guardrails | **NeMo Colang** `rails.co` | Gemini classifier + canonical match |
+| Cache | **Upstash Vector** `classic-lioness-60363…` | 3-layer (Response / Semantic / Prompt) threshold 0.88 |
+| UI | **Streamlit** (wide) + FastAPI | Hero + 3×2 cards + tabs Chat/Graph/Cache/Arch |
+| Observability | **LangSmith** | traceable retrieve/synthesize |
 
-If Neo4j or Qdrant are briefly unreachable (DNS/SSL hiccup, Aura pause), the app now self-heals and surfaces an honest error + hint instead of sticking in a broken state. If the LLM free-tier quota (429) is hit, an extractive fallback still returns the exact retrieved nodes/chunks.
+Self-healing: Neo4j `+s → +ssc` + home-DB discovery + 60s reconnect; Qdrant deterministic IDs; LLM signature handling.
 
 ---
 
-## Live Architecture Flow
+## 2. Live Flow
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                     User Interface                           │
-│              Streamlit  +  FastAPI (/health, /query)        │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ QueryRequest { query, session_id, top_k }
-                               ▼
-┌──────────────────────────────────────────────────────────────┐
-│                FinGraphRAG Orchestrator                      │
-│               LangGraph  (src/orchestrator.py)               │
-│                                                              │
-│  guard ──► understand ──► retrieve ──► build_context ──► synthesize │
-│    │         (blocked? ─────► synthesize: canned refusal)    │
-│    │  LangGraph conditional edge: guard.blocked ?            │
-│    │     blocked → synthesize (no DB cost)                   │
-│    │     continue → understand → retrieve → ... → synthesize │
-└──────────────────────────────┬───────────────────────────────┘
-                               ▼
- ┌─────────────────────┐  ┌──────────────────┐  ┌──────────────┐
- │ Nemo-style Guard    │  │ Query Understand │  │   Retrieval   │
- │ rails.co + Gemini   │  │  • Intent: REL/  │  │  Plan: HYB/   │
- │ classifier + scope  │  │    FACT/SEM      │  │  LOC/GLOB     │
- │ + canonical match   │  │  • Entities regex│  │               │
- └──────────┬──────────┘  └────────┬─────────┘  └──────┬────────┘
-            └─────────────────────┼─────────────────────┘
-                                  │ parallel (plan-gated)
-                    ┌─────────────┴─────────────┐
-                    ▼                           ▼
-           ┌──────────────────┐       ┌──────────────────┐
-           │  Neo4j (graph)   │       │  Qdrant (vector) │
-           │  Cypher: keys(n) │       │  embed_query +   │
-           │  CONTAINS(term)  │       │  query_points    │
-           │  + 1-hop neighbor│       │  score + metadata│
-           └────────┬─────────┘       └────────┬─────────┘
-                    └─────────────┬─────────────┘
-                                  │ sources: [{type:graph|vector}]
-                                  ▼
-                    ┌──────────────────────────┐
-                    │   Context Construction   │
-                    │  memory.summary() +      │
-                    │  Graph: json.dumps(node) │
-                    │  Document: chunk.text    │
-                    │  clipped to 20k chars    │
-                    └────────────┬─────────────┘
-                                 │ prompt: "Answer only from context..."
-                                 ▼
-                    ┌──────────────────────────┐
-                    │   Gemini LLM (or        │
-                    │   extractive fallback)   │
-                    │  _synthesize → _extract_ │
-                    │  text (handles block    │
-                    │  signature) or          │
-                    │  _fallback_answer on   │
-                    │  429 → graph+chunk dump │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │  Response                │
-                    │  answer, plan, intent,  │
-                    │  blocked, guard_trace,  │
-                    │  sources, graph_context, │
-                    │  vector_context, context,│
-                    │  trace{0..4}, session_id │
-                    └──────────────────────────┘
+┌─────────────────────┐
+│  Streamlit / FastAPI│  QueryRequest {query, session_id, top_k}
+└──────────┬──────────┘
+           ▼
+┌────────────────────────────────────────────────────────┐
+│  Orchestrator (LangGraph)  src/orchestrator.py        │
+│  guard ─► understand ─► retrieve ─► build_context ─► synthesize → END
+│   │        ▲              ▲                               ▲
+│   └─blocked?──► synthesize (refusal, 0 cost)─────────────┘
+└──────────┬─────────────────────────────────────────────┘
+           │
+     ┌─────┴──────┐
+     ▼            ▼
+┌──────────┐ ┌──────────┐
+│  Guard   │ │  Cache   │  MultiLayerCache (Upstash)
+│ rails.co │ │ Response │  exact → Semantic (vector 0.88) → Prompt
+│ Gemini   │ │ Upstash  │  HIT skips RAG, MISS → full pipeline
+└────┬─────┘ └────┬─────┘
+     └──────┬─────┘
+            ▼
+     ┌─────────────┐
+     │ Understand  │  RELATIONAL/FACTUAL/SEMANTIC → HYBRID/LOCAL/GLOBAL
+     └──────┬──────┘
+            ▼
+     ┌──────────────────────┐
+     │ Retrieve (plan-gated)│
+     │  Neo4j:Company 1-hop │──► 105 edges, rel_props
+     │  Qdrant query_points │──► score + metadata
+     └──────────┬───────────┘
+                ▼
+     ┌──────────────────┐
+     │ Build Context    │  memory + Graph json + Document text → 20k clip
+     └─────────┬────────┘
+               ▼
+     ┌──────────────────┐
+     │ Synthesize       │  Gemini 3 Flash → _extract_text
+     │                  │  429 → _fallback_answer (graph+chunks)
+     └─────────┬────────┘
+               ▼
+     ┌──────────────────┐
+     │ Response         │  answer + trace{0..4} + sources + cache meta
+     └──────────────────┘
 ```
 
 ---
 
-## Component Details
+## 3. UI Layer — Streamlined (`src/streamlit_app.py`)
 
-### 1. UI Layer
-* **Streamlit `src/streamlit_app.py`** — wide layout, health sidebar, query input, `🛡️ Guardrails` step panel (whiteboard-style), `🛤️ How this answer was derived` (intent → Cypher → nodes/chunks → context), source expanders, conversation history, analytics tabs. Init: `FinGraphRAG(get_settings())` cached in `st.session_state.system`.
-* **FastAPI `src/api.py`** — `GET /health` (degraded vs ok), `POST /query` → `QueryResponse`, `DELETE /memory/{session_id}`.
-* **CLI `src/main.py`** — `serve` (uvicorn), `ingest <csv>`, `ask <query>`, `ui` (subprocess streamlit).
-* Health sidebar now: filters to real services only (`gemini/qdrant/neo4j/guardrails/langsmith`), `🔄 Retry connections` button (`system.reconnect()` bypasses cooldown), Neo4j deep-dive (URI, configured→active DB, real error+hint), Qdrant deep-dive, `Rails: ... ✓`.
-
-### 2. Guardrail Layer — Nemo-Style, Gemini-Only
-* **Spec:** `src/guardrails_config/rails.co` (Colang 1.0) — `define user ask off topic` (10 utterances: joke, capital of france, poem, 2+2, dinner, game, movie, weather, election, sort python) | `define user ask financial question` (8 in-scope examples: Bharti–Haier, Reliance–CATL, Adani–BYD, Tata–Chery, SAIC stake, CATL partners, Consumer-Durables risk, Sany revenue) | `define bot refuse off topic` | `define flow handle off topic → stop` | `define flow handle financial question → execute financial_rag → stop`.
-* **Nemo config:** `src/guardrails_config/config.yml` (`engine: google_genai`, `model: gemini-3-flash-preview`, `single_call.enabled: false`) — runnable verbatim under real NeMo on Python 3.10–3.13 (`NEMOGUARDRAILS_LLM_FRAMEWORK=langchain nemoguardrails chat --config src/guardrails_config`). Custom action `actions.py:financial_rag` delegates to the same `FinGraphRAG` pipeline.
-* **Lightweight runtime `src/guardrails/fin_guardrails.py`** (ships with the app, required because NeMo doesn't install on Python 3.14): parses `rails.co`, builds `scope_terms` from your three CSVs, then per query:
-  1. `LOAD rails.co` (counts)
-  2. `SCOPE scan` (word-boundary hits among CSV terms + finance terms)
-  3. **Canonical-example match** (difflib ≥0.85, deterministic — guarantees `tell me a joke` / `capital of france` always refuse without an LLM call, saving quota)
-  4. otherwise **Gemini classifier** (`temperature:0`, JSON `{"canonical_form":...}`) — skips the noisy keyword hint, decides by meaning; on 429/any error falls back to scope-scan.
-  5. `FLOW selection` + `BOT action` (`stop`, RAG skipped on off-topic). Full trace stored in `guard_trace.steps` and surfaced in Streamlit.
-
-### 3. Orchestrator (LangGraph) `src/orchestrator.py`
-* **State `GraphState`** — `query/session_id/top_k`, guard fields (`blocked/guard_canonical/guard_flow/guard_message/guard_trace`), `intent/plan`, `graph_context/vector_context/sources`, `context`, `answer`.
-* **Nodes:**
-  * `guard`: `FinGuardrails.check()` as above.
-  * `understand` (static): `RELATIONAL` if `relationship|between|collaborate|partner|connected|impact`, else `FACTUAL` if `what is|which|how much|ticker|code|revenue`, else `SEMANTIC`; `plan = HYBRID|LOCAL|GLOBAL`; `entities = /\b[A-Z][A-Za-z0-9&.-]{1,30}\b/`.
-  * `retrieve`: `neo4j.search(query, entities, top_k)` when `LOCAL|HYBRID`; `qdrant.search(query, top_k)` when `GLOBAL|HYBRID`; unified `sources`; fallback to vector-only when both empty. Neo4j Cypher matches **any string property** (`any(key in keys(n) where toLower(toString(n[key])) CONTAINS toLower(term))`) — fixes old `n.name/n.ticker` miss — and returns `labels, relationship, neighbor` (dataset has 0 explicit rels, so neighbors are `null` and Streamlit notes that).
-  * `build_context`: `memory.summary() + Graph: json + Document: text`, truncated 20k.
-  * `synthesize`: if `blocked` → canned refusal (0 LLM cost); else `ChatGoogleGenerativeAI(gemini-3-flash-preview).invoke()` → `_extract_text()` (handles Gemini block-with-signature list). **Fallback:** on `429/RESOURCE_EXHAUSTED` returns `_fallback_answer()` — deterministic extractive dump of up to 6 graph nodes + 6 chunks with sources — so the JSW×Chery query in your last turn no longer throws despite the quota banner. Memory is updated either way. `@traceable` for LangSmith.
-* **`query()`** builds `trace{step_0_guardrails, step_1_understand, step_2_graph_retrieval{cypher/params/database/nodes_returned}, step_3_vector_retrieval{collection/chunks_returned}, step_4_context{chars}}` plus legacy `sources` for UI.
-* **`health()` / `health_detail()` / `reconnect()`** — `gemini ok|not_configured`, `qdrant`, `neo4j`, `guardrails`, `langsmith`; detail adds `neo4j_detail{qdrant_detail}` with `hint`, `qdrant_collection`, `gemini_model`, `rails_path/exists`.
-
-### 4. Data Storage
-
-#### Neo4j `src/tools/neo4j_tools.py`
-* `GraphDatabase.driver` against `NEO4J_URI` (`neo4j+s://5a76f90e.databases.neo4j.io`, instance `5a76f90e`). Handles Windows `CERTIFICATE_VERIFY_FAILED` by retrying `neo4j+ssc://`; **auto-discovers home DB** (`SHOW DATABASES` → home `5a76f90e`, else configured, else `None`) and prints `configured 'neo4j' unavailable, using '5a76f90e'`. `_ensure_driver()` with `RECONNECT_COOLDOWN_S=60` self-heals a transient `getaddrinfo failed` cold start on next `health()/search()`; `reconnect()` forces it from the sidebar; `search()` also injects stop-word-filtered fallback terms when regex finds no entities (e.g. lowercase query). `health_detail` adds DNS/SSL/auth hints.
-
-#### Qdrant `src/tools/qdrant_tools.py`
-* `QdrantClient(url, api_key, timeout=120)` + `GoogleGenerativeAIEmbeddings(gemini-embedding-001)`. `health()` → `get_collections()`; `health_detail()` with collections list + hints; `ensure_collection()`; `_embed_batch` with `35s*(attempt+1)` retry on 429 (5 attempts); `upsert` in batches of 5 (`time.sleep(2)` between); `search` → `embed_query` → `query_points(limit, with_payload=True)` → `{text,score,metadata}`.
-
-### 5. AI/ML
-* **Gemini LLM:** `gemini-3-flash-preview` (override via `GEMINI_MODEL` in `src/.env` / `.env`; alias `GEMINI_MODEL_NAME`). Default was `gemini-3.5-flash` which exhausts at 20 req/day on free tier — now visible as `429` fallback.
-* **Embeddings:** `models/gemini-embedding-001` (configurable `EMBEDDING_DIMENSIONS=3072`).
-* **Memory `src/memory/conversation_memory.py`:** in-process per-`session_id` window `MEMORY_WINDOW_SIZE=10` (Streamlit `streamlit_session`, FastAPI caller-chosen).
-
-### 6. Config `src/config/settings.py`
-* `BaseSettings` (Pydantic, `env_file=None`, `extra=ignore`), aliases `GOOGLE_API_KEY|GEMINI_API_KEY`, `GEMINI_MODEL|GEMINI_MODEL_NAME`, etc. Loads `project_root/.env` then `project_root/src/.env` (`override=False`). `@lru_cache get_settings()` — call `get_settings.cache_clear()` after editing `.env` without restart. Exposes `effective_langsmith_*`.
+* **Theme fix (Sep 13):** removed `st.chat_input` fixed-position overlap with Deploy header; now `text_area + Send` inside Chat tab; `block-container` top padding; `3×2` card grid (was 6-in-row squeeze); `overflow-wrap:anywhere` for badges/answers. Architecture tab kept as **clean diagram only** per request.
+* **Hero:** gradient `FinGraphRAG` + subtitle + badges (Hybrid, 105 Edges, 532 Vecs, Gemini 3 Flash, Guardrails, Upstash).
+* **Cards (3×2):** Hybrid Retrieval · Knowledge Graph (629/105) · Vector Search · Gemini Synthesis · NeMo Guardrails · 3-Layer Cache.
+* **Tabs:**
+  * **Chat** — chips (JSW×Chery, Bharti×Haier, CATL, Dixon×Vivo), `st.chat_message` history, badges (Cache HIT/RAG, Guardrail block), `answer-box`, expanders: Guardrail trace · Retrieval (Cypher, 4 graph nodes + 4 chunks) · Context. Latency + source count caption. Fallback warning on 429.
+  * **Graph Explorer** — live `MATCH count`, bar by rel type, 12-row edge table, schema code. Proves `MATCH (JSW)-[:LICENSES_TECHNOLOGY_FROM]->(Chery)` now works.
+  * **Cache Dashboard** — hit rate, hits/misses/saved, bar by layer, Upstash snippet, semantic test box, history table. Explains Response/Semantic/Prompt.
+  * **Architecture** — ASCII diagram only + caption pointing to this file.
+* **Sidebar:** `System Status` (gemini/qdrant/neo4j/guardrails/langsmith) + `🔄 Retry` (bypasses 60s cooldown) + Neo4j/Qdrant expanders with hints + Upstash status + hit rate + Queries/Turns. Init cached in `st.session_state.system`.
 
 ---
 
-## Data Flows
+## 4. Guardrails — NeMo-Style, Gemini-Only
+
+* `src/guardrails_config/rails.co` (Colang 1.0): 10 off-topic (joke, capital of france…) · 8 financial (Bharti×Haier, Reliance×CATL…) · `bot refuse off topic` · `flow handle off topic → stop` · `flow handle financial question → execute financial_rag → stop`.
+* `src/guardrails_config/config.yml`: `engine: google_genai` `model: gemini-3-flash-preview` `single_call.enabled:false`. Runnable as `NEMOGUARDRAILS_LLM_FRAMEWORK=langchain nemoguardrails chat --config src/guardrails_config` (Python 3.10-13).
+* `src/guardrails/fin_guardrails.py` (required on Python 3.14 where nemoguardrails won't install): parses `rails.co`, word-boundary `scope scan` from 3 CSVs, **canonical difflib ≥0.85** (deterministic, saves quota), else **Gemini classifier** `temp 0, JSON`, else scope fallback. Trace `steps[1..5]` surfaced in UI. Off-topic costs 0 DB/LLM.
+
+---
+
+## 5. Orchestrator (`src/orchestrator.py`)
+
+* **State:** `GraphState {query, session_id, top_k, blocked, guard_*, intent, plan, graph_context, vector_context, sources, context, answer}`.
+* **Nodes:** `guard` (above) → conditional `blocked? synthesize : understand` → `understand` (REL if relationship/between/partner, FACT if what is/which/ticker/code, else SEM; plan HYBRID/LOCAL/GLOBAL; entities regex) → `retrieve` (Company-first Cypher + FinancialEntity fallback, Qdrant `query_points`, unified sources, vector-only fallback) → `build_context` (memory + Graph json + Document) → `synthesize` (blocked→refusal else Gemini invoke → `_extract_text` handling signature list else `_fallback_answer` on 429/RESOURCE_EXHAUSTED).
+* **`query()`** returns `trace{step_0_guardrails, step_1_understand{intent/entities/domain/plan}, step_2_graph{cypher/params/database/nodes}, step_3_vector{collection/chunks}, step_4_context{chars}}` + `guard_trace`.
+* **`health()/health_detail()/reconnect()`** — adds `neo4j_detail/qdrant_detail` with hints, `rails_path/exists`, `gemini_model`.
+
+---
+
+## 6. Data Storage
+
+### Neo4j `src/tools/neo4j_tools.py`
+* Driver `neo4j+s://5a76f90e` with `+ssc` fallback for Windows `CERTIFICATE_VERIFY_FAILED`; home-DB auto-discovery (`5a76f90e`); `_ensure_driver(60s cooldown)` + `reconnect()` from sidebar; `_stable_key(company_code|name)` (fixes old `hash()` randomization); `search()` Company-first with `OPTIONAL MATCH (n)-[r]->(neighbor)` (previously 0 rels for JSW); `upsert_rows` (FinancialEntity MERGE) + `upsert_with_edges` (MERGE `:Company` + typed `PARTNERS_WITH/LICENSES_TECHNOLOGY_FROM/HAS_STAKE_IN/...` via `REL_TYPE_MAP`, idempotent grouped by type). Migration `scripts/add_edges.py --skip_qdrant` gave `316→629 nodes, 0→105 rels, qdrant 532→532`.
+
+### Qdrant `src/tools/qdrant_tools.py`
+* `QdrantClient(timeout 120)` + `GoogleGenerativeAIEmbeddings`. `health_detail` + `ensure_collection`; `_embed_batch` retry `35s·attempt` on 429; `upsert` now **deterministic** `uuid5(sha256(text|source|row))` (was `uuid4` → 532 points for 320 rows) + `batch 5 + sleep 2`; `search` embed_query → query_points.
+
+---
+
+## 7. Caching — 3 Layers (`src/tools/semantic_cache.py`)
+
+* **Response Cache** — `norm(query)` exact → instant.
+* **Semantic Cache** — **Upstash Vector** `classic-lioness-60363-us1-vector.upstash.io` (`upstash-vector`) else local 384-d hashed fallback; cosine ≥ `CACHE_THRESHOLD 0.88` (e.g. *"JSW Chery deal?"* hits *"What is JSW Group and Chery relationship?"*). Upsert on each miss, hit skips RAG.
+* **Prompt Cache** — `hash(context+question)` → LLM output (implemented as response cache extension).
+* **UI:** `MultiLayerCache` stats `hits/misses/response_hits/semantic_hits/prompt_hits/total_saved_ms` shown in sidebar + Cache tab bar/history/test box. `Cache HIT · semantic 0.96` badge in chat (see your screenshot). Install: `pip install upstash-vector`.
+
+---
+
+## 8. AI/ML & Memory
+
+* **Gemini:** `gemini-3-flash-preview` (`GEMINI_MODEL`, alias `GEMINI_MODEL_NAME`) — free tier `gemini-3.5-flash` exhausted at 20/d, `_fallback_answer` keeps 429 from throwing; `upstash` not using Gemini for embeddings in cache fallback.
+* **Embeddings:** `models/gemini-embedding-001` 3072-d.
+* **Memory:** `src/memory/conversation_memory.py` window `MEMORY_WINDOW_SIZE=10`, per `session_id`.
+
+---
+
+## 9. Config (`src/config/settings.py`, `src/.env`)
+
+`BaseSettings` loads `.env` then `src/.env` (`override=False`), `@lru_cache`. `cache_clear()` after edit.
+
+| Key | Current | Note |
+|-----|---------|------|
+| `GOOGLE_API_KEY` | `AQ.Ab8RN…` | Gemini |
+| `GEMINI_MODEL` | `gemini-3-flash-preview` | was 3.5 |
+| `EMBEDDING_MODEL` | `models/gemini-embedding-001` | 3072 |
+| `NEO4J_URI` | `neo4j+s://5a76f90e…` → active `5a76f90e` | |
+| `QDRANT_URL/COLLECTION` | `…cloud.qdrant.io` / `graphragfin` | |
+| `UPSTASH_VECTOR_REST_URL/TOKEN` | `classic-lioness…` / `ABkF…` | semantic cache |
+| `CACHE_THRESHOLD` | `0.88` | |
+| `LANGSMITH_*` | `FINGRAPHRAG` | |
+
+---
+
+## 10. Data Flows
 
 ### Ingestion `src/ingestion.py`
 ```
-CSV (stock_company.csv / stock_report.csv / Stock_industry_grouped_w_code.csv)
-  → pandas DataFrame → per-row  text = "field: value | field: value"
-                           metadata = {source, row}
-     ──► QdrantStore.upsert(documents)  [batch 5, embeddings, cosine 3072]
-     └─► Neo4jClient.upsert_rows(rows)  [MERGE FinancialEntity {key}, SET += properties]
+CSV → DataFrame → text="field: value | …" + {source,row}
+      ├─► Qdrant.upsert (deterministic id, batch 5)  [skip_qdrant=True for edge migration]
+      └─► Neo4j.upsert_rows (FinancialEntity) + upsert_with_edges (:Company + typed rel)
+          scripts/add_edges.py → 70 + 49 edges, MERGE idempotent
 ```
 
-### Query (current, with guard + fallback)
-
+### Query (with guard+cache+fallback)
 ```
-User: "What is the relationship between JSW Group and Chery Automobile?"  (top_k=6)
-  │
-  ├─ 0. guard  FinGuardrails.check()
-  │     LOAD rails.co (2 user forms, 2 bot msgs, 2 flows)
-  │     SCOPE scan hits = ["chery","jsw","automobile"?]  (word-boundary)
-  │     no canonical hit → Gemini classify → "ask financial question"
-  │     → flow "handle financial question" → blocked=False
-  │     trace.steps[5] recorded
-  │
-  ├─ 1. understand
-  │     lowered contains "relationship between" → intent=RELATIONAL
-  │     plan=HYBRID, entities=["What","JSW","Group","Chery","Automobile"]
-  │
-  ├─ 2. retrieve  (HYBRID → both)
-  │     Neo4j  cypher= MATCH (n) WHERE any(key in keys(n) ...) CONTAINS toLower(term)
-  │            params {entities:["What","JSW","Group","Chery","Automobile"], limit:6, database:"5a76f90e"}
-  │            → 6 nodes e.g. JSW/Technology_Licensing/Chery_SAIC (stock_company.csv),
-  │              plus Tata/Chery neighbors, etc. labels=["FinancialEntity"], relationship=null
-  │     Qdrant collection=graphragfin → 6 chunks e.g. "company_code: JSW | ... chery ..."
-  │     sources = 12 entries (type graph|vector)
-  │
-  ├─ 3. build_context
-  │     "Conversation history:\nNo previous conversation.\nGraph: {...}\n...Document: ..."
-  │     4245 chars (clipped 20000)
-  │
-  ├─ 4a. synthesize (happy path, quota available)
-  │     invoke gemini-3-flash-preview with prompt "Answer only from context..."
-  │     → _extract_text → "JSW Group and Chery Automobile have a Technology Licensing relationship.
-  │       JSW signed a deal to source technology/components for its new-energy venture (DNA India,
-  │       Confirmed 2025-08-20, stock_company.csv: Chery_SAIC)..."
-  │     memory.add(session, query, answer)
-  │
-  └─ 4b. synthesize (quota exhausted — 429, as in your last turn)
-        caught → _fallback_answer → deterministic extractive markdown:
-        "**Answer from retrieved context (LLM synthesis skipped):** Q: What is the relationship..."
-        "- Graph [stock_company.csv] relationship_type: Technology_Licensing | company_name: JSW Group | chinese_partner: Chery_SAIC ..."
-        "- Chunk score=0.82 [stock_report.csv row 5]: company_name: JSW Group | chinese_partner: Chery Automobile | deal_type: Technology Licensing ..."
-        Streamlit shows that answer + a warning "Model gemini-3-flash-preview is rate-limited. Automatic retry in 45s."
-        but DOES NOT throw — path trace and sources stay intact.
-
-Off-topic example:  "tell me a joke"
-  guard canonical hit ("tell me a joke") → ask off topic → handle off topic → bot refuse off topic
-  → blocked=True → synthesize returns REFUSAL_MESSAGE (0 graph/qdrant/LLM calls)
-  → answer "I'm FinGraphRAG, a financial research assistant for Indian companies... I can't help with that..."
+"JSW Group and Chery Automobile?" (top_k 6)
+ 0.guard LOAD→SCOPE hits [chery,jsw] → no canonical → Gemini "ask financial question" → blocked=False
+ 0b.cache lookup miss (first time) → MISS
+ 1.understand REL → HYBRID → entities [What,JSW,Group,Chery,Automobile]
+ 2.retrieve Company Cypher (MATCH Company CONTAINS term) → 3 rels (PARTNERS_WITH, LICENSES_TECHNOLOGY_FROM) → + FinancialEntity → 6 nodes, Qdrant 6 chunks → sources 12
+ 3.build_context 4245 chars
+ 4a.synthesize Gemini 3 Flash → "Technology Licensing — JSW sources tech … 2025-08-20"
+ 4b.on 429 → fallback "**Answer from retrieved context (LLM synthesis skipped):** …"
+ cache.put → history + chat
+Second identical/paraphrase → semantic 0.96 HIT → answer without RAG (screenshot badge)
+"tell me a joke" → canonical "tell me a joke" → ask off topic → refusal, 0 cost
 ```
 
 ---
 
-## Worked Example — What You Just Ran
-
-**Input**
-```json
-{"query":"What is the relationship between JSW Group and Chery Automobile?","session_id":"streamlit_session","top_k":6}
-```
-
-**Step 0 — Guardrails**
-```json
-{"canonical_form":"ask financial question","flow":"handle financial question","blocked":false,
- "decider":"gemini","steps":[
-  {"step":1,"name":"LOAD rails.co","detail":"2 user forms, 2 bot messages, 2 flows from .../guardrails_config/rails.co"},
-  {"step":2,"name":"SCOPE scan (our CSV terms)","detail":"hits=['chery','jsw']"},
-  {"step":3,"name":"GEMINI canonical-form classification","detail":"ask financial question — asks about partnership between two known companies"},
-  {"step":4,"name":"FLOW selection","detail":"handle financial question"},
-  {"step":5,"name":"BOT action","detail":"bot answer financial question → execute financial_rag → stop"}]}
-```
-
-**Step 1 — Understand**
-```json
-{"intent":"RELATIONAL","entities":["What","JSW","Group","Chery","Automobile"],"domain":"financial","plan":"HYBRID"}
-```
-
-**Step 2 — Retrieve**
-
-Neo4j (Cypher actually executed, as shown in Streamlit Step 2):
-```cypher
-MATCH (n) WHERE any(key IN keys(n) WHERE n[key] IS NOT NULL AND any(term IN $entities WHERE toLower(toString(n[key])) CONTAINS toLower(term))) OPTIONAL MATCH (n)-[r]-(neighbor) RETURN properties(n) AS node, labels(n) AS labels, type(r) AS relationship, properties(neighbor) AS neighbor, labels(neighbor) AS neighbor_labels LIMIT $limit
--- params: {entities:["What","JSW","Group","Chery","Automobile"], limit:6, database:"5a76f90e"}
--- result 6 × {"node":{relationship_type:"Technology_Licensing",company_name:"JSW Group",chinese_partner:"Chery_SAIC",...},"labels":["FinancialEntity"],"relationship":null}
-```
-
-Qdrant:
-```json
-[{"text":"company_code: JSW | company_name: JSW Group | ... chinese_partner: Chery_SAIC | relationship_type: Technology_Licensing","score":0.84,"metadata":{"source":"stock_company.csv","row":3}},
- {"text":"company_name: JSW Group | chinese_partner: Chery Automobile | ... deal_type: Technology Licensing | ... source: DNA India","score":0.81,"metadata":{"source":"stock_report.csv","row":5}}]
-```
-
-**Step 3 — Context**
-```
-Conversation history:
-No previous conversation.
-Graph: {"node": {"relationship_type": "Technology_Licensing", "company_name": "JSW Group", ...}, "labels": ["FinancialEntity"], ...}
-Document: company_code: JSW | company_name: JSW Group | ...
-(4245 chars)
-```
-
-**Step 4 — Answer**
-
-*With quota:* LLM synthesis above — **Technology Licensing — JSW sources technology/components from Chery Automobile for its new-energy/EV venture (DNA India, Confirmed 2025-08-20; stock_company.csv: Technology_Licensing, Chery_SAIC).**
-
-*On 429 (your failing turn):* extractive fallback shown verbatim in ` Answer from retrieved context (LLM synthesis skipped)` with the exact graph nodes + chunk texts above.
-
----
-
-## Key Features / Ops
-
-* **Hybrid retrieval + honest provenance** — every answer exposes its intent/plan, exact Cypher+params, each graph node's full properties, each chunk's text+score+metadata, and merged context (Streamlit `🛤️ How this answer was derived`).
-* **Topical safety** — off-topic never touches DB/LLM; on-topic meaning-based, not keyword-only (fixes `api∈capital`, `ev∈never` false positives).
-* **Resilience** — Neo4j `+s → +ssc` fallback, DB auto-discovery, DNS reconnect (60s cooldown + manual `🔄 Retry`), Qdrant hints, LLM `_extract_text` + 429 fallback, streamlit 429 warning (not traceback).
-* **Observability** — LangSmith `@traceable` on `retrieve`/`synthesize`, `GET /health` detail (real error+hint, rails path exists), `trace{0..4}` in `QueryResponse`.
-* **Scalability** — Qdrant batch 5 + 2s gap + embedding retry `35s·attempt`, Neo4j connection pooling, context 20k limit, configurable `top_k`.
-
----
-
-## Configuration
-
-`src/.env` (actual, checked in with example keys — replace for prod) and `/.env` both loaded; `get_settings()` is `lru_cache`-ed.
-
-| Key | Current | Notes |
-|-----|---------|-------|
-| `GOOGLE_API_KEY` / `GEMINI_API_KEY` | `AQ.Ab8RN...` | required; free-tier exhausted for `gemini-3.5-flash`, fresh quota for `gemini-3-flash-preview` |
-| `GEMINI_MODEL` | `gemini-3-flash-preview` (default, alias `GEMINI_MODEL_NAME`) | was `gemini-3.5-flash`; switch in `.env` if quota hit |
-| `EMBEDDING_MODEL` | `models/gemini-embedding-001` | 3072-d |
-| `NEO4J_URI` | `neo4j+s://5a76f90e.databases.neo4j.io` | Aura free instance |
-| `NEO4J_DATABASE` | `neo4j` (active resolved `5a76f90e`) | Aura's home DB is the instance id |
-| `QDRANT_URL` / `QDRANT_COLLECTION` | `...cloud.qdrant.io` / `graphragfin` | also `financial_documents` exists |
-| `LANGSMITH_*` | `FINGRAPHRAG` | tracing enabled |
-
----
-
-## Run
+## 11. Operations
 
 ```powershell
-# Streamlit (currently on :8501, PID 8764 — refresh after .env/model change)
+# Streamlit :8501 (now text_area+Send, 3×2 cards, no overlap)
 python -m streamlit run src/streamlit_app.py --server.headless true --server.port 8501
-# or
-python -m src.main ui
-
 # FastAPI
 python -m src.main serve --port 8000
-
-# One-shot query (uses same LangGraph graph + fallback)
+# One-shot
 python -m src.main ask "What is the relationship between JSW Group and Chery Automobile?" --session-id demo
-
-# NeMo server (needs Python 3.10–3.13 + pip install "nemoguardrails[google]")
+# Edges (idempotent, no Qdrant dup)
+python scripts/add_edges.py
+# NeMo
 NEMOGUARDRAILS_LLM_FRAMEWORK=langchain nemoguardrails chat --config src/guardrails_config
 ```
 
-## Monitoring
+Health: sidebar `System Status` + deep dives + `🔄 Retry` + `Upstash: ✓ connected` + `Hit rate`.
 
-* Sidebar `System Status` (Gemini/Qdrant/Neo4j/Guardrails/LangSmith), Neo4j+Qdrant detail expanders, retry button; `Qdrant collection ... · Model ...` + `Rails ... ✓` caption.
-* Logs: `Neo4j: SSL verification failed ... using fallback ...`, `configured database 'neo4j' unavailable, using '5a76f90e'` are expected on first connect.
+---
 
+## 12. Known State
+
+* Qdrant 532 reflects old `uuid4` dupes (correct deterministic re-ingest would be ~320); kept to avoid data loss, future upserts are idempotent.
+* Neo4j 629 = legacy 316 FinancialEntity + 313 Company (Company nodes enable traversal; FinancialEntity kept for provenance).
+* BYD vs BYD Co remain separate Company nodes (raw partner normalization could merge them).

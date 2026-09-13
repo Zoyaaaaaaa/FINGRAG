@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     chunk_size: int = Field(default=1200, validation_alias="CHUNK_SIZE")
     chunk_overlap: int = Field(default=150, validation_alias="CHUNK_OVERLAP")
 
+    # Upstash Semantic Cache (optional — falls back to local if not set)
+    upstash_url: str = Field(default="", validation_alias="UPSTASH_VECTOR_REST_URL")
+    upstash_token: str = Field(default="", validation_alias="UPSTASH_VECTOR_REST_TOKEN")
+    cache_threshold: float = Field(default=0.88, validation_alias="CACHE_THRESHOLD")
+
     @property
     def effective_langsmith_api_key(self) -> str:
         return self.langchain_api_key or self.langsmith_api_key
