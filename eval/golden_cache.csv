@@ -1,0 +1,6 @@
+id,question,expected_behavior,cache_layer,source
+C001,What is the relationship between JSW and Chery?,First call: MISS → full RAG. Second identical call: HIT response cache (0ms).,response,N/A
+C002,JSW Chery deal?,Semantic match to C001 — HIT semantic cache (~10-50ms) if similarity ≥ 0.88.,semantic,N/A
+C003,Tell me about JSW Group and Chery Automobile partnership,Semantic match — HIT semantic cache.,semantic,N/A
+C004,What is the relationship between JSW and Chery? (same context),HIT prompt cache if prompt+context hash matches.,prompt,N/A
+C005,What is the weather today?,MISS all layers → full RAG → out-of-scope refusal.,miss,N/A

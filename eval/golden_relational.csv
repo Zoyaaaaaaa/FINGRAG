@@ -1,0 +1,26 @@
+id,question,expected_answer,intent,plan,source
+R001,What is the relationship between Reliance and CATL?,Technology_Partnership — Reliance is evaluating investment in CATL's battery technology for fuel cells and batteries. Status: Under Discussion.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R002,What is the relationship between Adani and BYD?,JV_Discussion — Adani held talks with BYD for EV sector foray. Status: Under Discussion.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R003,What is the relationship between JSW and Chery?,Technology_Licensing — JSW signed a deal to source technology and components from Chery for a new-energy venture. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R004,What is the relationship between Tata Motors and Chery?,Platform_Licensing — Tata Motors licensed the Chery platform for the Avinya premium EV brand; first model expected 2027.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R005,What is the relationship between Bharti and Haier?,49_Pct_JV — Bharti and Warburg Pincus are acquiring 49% of Haier India; Haier retains 49%. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R006,What is the relationship between Dixon and Vivo?,JV — Dixon holds 51% stake in the JV with Vivo India; awaiting security clearance.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R007,What is the relationship between Ashok Leyland and CALB?,Technology_Agreement — 20-year agreement with CALB Group; initial cell imports; ₹50,000 Cr investment. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R008,What is the relationship between Sona BLW and Jinnaite?,JV_Abeyance — Proposed JV in China put in abeyance. Status: Abeyance.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R009,What is the relationship between Sun Pharma and China Medical System?,Distribution — Commercializing psoriasis drug Ilumya in Greater China. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R010,What is the relationship between Cipla and Kidd Pharma?,JV_Completed — Cipla acquired partner's stake in September 2025 for full control. Status: Completed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R011,What is the relationship between Dr Reddy's and Kunshan Rotam Reddy?,Distribution — Marketing and distribution partnership in China. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R012,What is the relationship between Motherson and JMCG?,JV — Expanding manufacturing capabilities through JV. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R013,What is the relationship between Uno Minda and Shenyang Jiuan?,JV — Manufacturing automotive lamps. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R014,What is the relationship between Aurobindo Pharma and Luoxin?,JV — Commercializing medicines in China. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R015,What is the relationship between Glenmark and Harbour BioMed?,Research_Partnership — Immunology and innovative therapies collaboration. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R016,What is the relationship between Starlit and Guangdong Dynavolt?,JV — 24% stake to Chinese partner for VRLA batteries. Status: Confirmed.,RELATIONAL,HYBRID,stock_company.csv + stock_report.csv
+R017,How does Reliance collaborate with CATL?,Reliance is evaluating investment in CATL's battery technology for fuel cells and batteries. Status: Under Discussion.,RELATIONAL,HYBRID,stock_report.csv
+R018,How does JSW partner with SAIC?,JSW is in talks to increase stake in JSW MG Motor India; SAIC owns 49%, JSW owns 35%. Status: Under Discussion.,RELATIONAL,HYBRID,stock_report.csv
+R019,What is the connection between Tata Motors and AESC?,Technology transfer pact for LFP and NMC battery manufacturing; AESC holds 12% in Agratas. Status: Confirmed.,RELATIONAL,HYBRID,stock_report.csv
+R020,What is the impact of the JSW-Chery deal on JSW's EV business?,JSW signed a deal to source technology and components from Chery for a new-energy venture, confirmed as of 2025-08-20.,RELATIONAL,HYBRID,stock_report.csv
+R021,Is Adani connected to CATL?,Yes — Adani visited CATL for partnership discussions. Status: Under Discussion.,RELATIONAL,HYBRID,stock_report.csv
+R022,Which companies partner with Chinese firms in the EV sector?,Reliance (CATL), Adani (BYD/CATL), JSW (Chery/SAIC), Tata Motors (Chery/AESC), MG (SAIC), BYD, Ola Electric, Ather, Ampere, Bajaj Auto, Hero Electric.,RELATIONAL,HYBRID,stock_company.csv
+R023,What is the relationship between Tata Motors and Jaguar Land Rover China?,Platform_Licensing — Leveraging Freelander platform from Chery-JLR JV in China. Status: Confirmed.,RELATIONAL,HYBRID,stock_report.csv
+R024,What is the relationship between Dixon and Longcheer?,JV — Dixon holds 74% stake; mobile phone manufacturing. Status: Confirmed.,RELATIONAL,HYBRID,stock_report.csv
+R025,What is the relationship between Dixon and Qtech?,JV — Dixon holds 51% stake; camera modules and sensors. Status: Confirmed.,RELATIONAL,HYBRID,stock_report.csv

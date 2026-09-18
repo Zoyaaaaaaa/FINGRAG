@@ -1,0 +1,41 @@
+id,question,expected_answer,intent,plan,source
+F001,What is the company code for Reliance Industries?,RELIANCE,FACTUAL,LOCAL,stock_company.csv
+F002,What is the company code for Adani Group?,ADANI,FACTUAL,LOCAL,stock_company.csv
+F003,What is the company code for JSW Group?,JSW,FACTUAL,LOCAL,stock_company.csv
+F004,What is the company code for Tata Motors?,TATAMOTORS,FACTUAL,LOCAL,stock_company.csv
+F005,What industry is Reliance Industries in?,EV_Batteries,FACTUAL,LOCAL,stock_company.csv
+F006,What industry is Adani Group in?,EV_Manufacturing,FACTUAL,LOCAL,stock_company.csv
+F007,What industry is Bharti Enterprises in?,Consumer_Electronics,FACTUAL,LOCAL,stock_company.csv
+F008,What sector does Tata Motors operate in?,Automotive,FACTUAL,LOCAL,stock_company.csv
+F009,What sector does Sun Pharma operate in?,Healthcare,FACTUAL,LOCAL,stock_company.csv
+F010,Which exchange are all companies listed on?,NSE/BSE,FACTUAL,LOCAL,stock_company.csv
+F011,What is the Indian status of Great Wall Motors India?,Inactive,FACTUAL,LOCAL,stock_company.csv
+F012,What is the Indian status of TikTok India?,Inactive,FACTUAL,LOCAL,stock_company.csv
+F013,What is the Indian status of BYD India?,Operating,FACTUAL,LOCAL,stock_company.csv
+F014,What is the country of origin for Haier India?,China,FACTUAL,LOCAL,stock_company.csv
+F015,What is the country of origin for Hyundai India?,Korea,FACTUAL,LOCAL,stock_company.csv
+F016,What is the country of origin for BMW India?,Germany,FACTUAL,LOCAL,stock_company.csv
+F017,What is the relationship type between Reliance and CATL?,Technology_Partnership,FACTUAL,LOCAL,stock_company.csv
+F018,What is the relationship type between Bharti and Haier?,49_Pct_JV,FACTUAL,LOCAL,stock_company.csv
+F019,What is the relationship type between Tata Motors and Chery_AESC?,Platform_Licensing,FACTUAL,LOCAL,stock_company.csv
+F020,What is the deal type between Reliance and CATL?,Technology Partnership,FACTUAL,LOCAL,stock_report.csv
+F021,What is the status of the Reliance-CATL deal?,Under Discussion,FACTUAL,LOCAL,stock_report.csv
+F022,What is the status of the JSW-Chery deal?,Confirmed,FACTUAL,LOCAL,stock_report.csv
+F023,What is the status of the Sona BLW-Jinnaite JV?,Abeyance,FACTUAL,LOCAL,stock_report.csv
+F024,What is the report date for the Reliance-CATL deal?,2025-08-20,FACTUAL,LOCAL,stock_report.csv
+F025,What is the report date for the JSW-SAIC stake increase talks?,2026-08-25,FACTUAL,LOCAL,stock_report.csv
+F026,What is the report date for the Tata Motors-AESC deal?,2026-09-01,FACTUAL,LOCAL,stock_report.csv
+F027,Which source reported the JSW-Chery deal?,DNA India,FACTUAL,LOCAL,stock_report.csv
+F028,Which source reported the Tata Motors-Chery platform licensing?,Reuters,FACTUAL,LOCAL,stock_report.csv
+F029,Which source reported the Starlit-Dynavolt JV?,VCCircle,FACTUAL,LOCAL,stock_report.csv
+F030,What is the Chinese presence level for Reliance Industries?,Medium,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F031,What is the Chinese presence level for Adani Group?,High,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F032,What is the risk exposure for Reliance Industries?,Moderate,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F033,What is the risk exposure for Adani Group?,High,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F034,What is the industry group for Tata Motors?,EV_Ecosystem,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F035,What is the industry group for Sun Pharma?,Pharmaceuticals,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F036,What is the key player for Bharti Enterprises?,Haier_JV,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F037,What is the key player for Dixon Technologies?,Vivo_Longcheer_Qtech_JV,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F038,What is the key player for Ashok Leyland?,CALB_Group_Agreement,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+F039,How much did Tata pay for AESC technology?,£40M+,FACTUAL,LOCAL,stock_report.csv
+F040,What is the stake percentage of AESC in Agratas?,12%,FACTUAL,LOCAL,stock_report.csv

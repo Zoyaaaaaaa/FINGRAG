@@ -142,7 +142,7 @@ def _gemini_classify(query: str, scope_hits: list[str], settings: Any) -> dict[s
     off_examples = rails["user_forms"].get("ask off topic", [])[:10]
     fin_examples = rails["user_forms"].get("ask financial question", [])[:8]
     llm = ChatGoogleGenerativeAI(
-        model=getattr(settings, "gemini_model", "gemini-3-flash-preview"),
+        model=getattr(settings, "gemini_model", "gemini-3.5-flash"),
         google_api_key=settings.google_api_key,
         temperature=0,
     )

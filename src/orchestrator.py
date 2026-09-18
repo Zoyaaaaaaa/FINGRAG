@@ -12,6 +12,7 @@ from src.config.settings import Settings
 from src.memory.conversation_memory import ConversationMemory
 from src.tools.neo4j_tools import Neo4jClient
 from src.tools.qdrant_tools import QdrantStore
+from src.rails import RailsOrchestrator
 
 
 class GraphState(TypedDict, total=False):
@@ -51,6 +52,7 @@ class FinGraphRAG:
         self.llm = ChatGoogleGenerativeAI(model=self.settings.gemini_model, google_api_key=self.settings.google_api_key, temperature=0.1) if self.settings.google_api_key else None
         from src.guardrails.fin_guardrails import FinGuardrails
         self.guards = FinGuardrails(self.settings)
+        self.rails_orchestrator = RailsOrchestrator(self.settings)
         self.graph = self._build_graph()
 
     def _guard(self, state: GraphState) -> dict[str, Any]:
@@ -97,16 +99,56 @@ class FinGraphRAG:
 
     @traceable(name="retrieve_financial_context", run_type="chain")
     def _retrieve(self, state: GraphState) -> dict[str, Any]:
+        # Apply retrieval rails
+        retrieval_decision = self.rails_orchestrator.execute_retrieval_rails_only(
+            state["query"],
+            state.get("intent", {}),
+            state.get("plan", "GLOBAL"),
+            state.get("top_k")
+        )
+        
+        if not retrieval_decision.allowed:
+            return {
+                "graph_context": [],
+                "vector_context": [],
+                "sources": [],
+                "retrieval_blocked": True,
+                "retrieval_reason": retrieval_decision.reason
+            }
+        
+        # Use the rail's max_results and filters
+        max_results = retrieval_decision.max_results
+        filters = retrieval_decision.filters or {}
+        
         entities = state.get("intent", {}).get("entities", [])
-        graph_context = self.neo4j.search(state["query"], entities, state.get("top_k", 8)) if state["plan"] in ("LOCAL", "HYBRID") else []
-        vector_context = self.qdrant.search(state["query"], state.get("top_k", 8)) if state["plan"] in ("GLOBAL", "HYBRID") else []
-        sources = [{"type": "graph", "data": item} for item in graph_context]
-        sources.extend({"type": "vector", "data": item} for item in vector_context)
+        graph_context = self.neo4j.search(state["query"], entities, max_results) if state["plan"] in ("LOCAL", "HYBRID") else []
+        vector_context = self.qdrant.search(state["query"], max_results) if state["plan"] in ("GLOBAL", "HYBRID") else []
+        
+        # Apply retrieval validation to results
+        all_results = [{"type": "graph", "data": item} for item in graph_context]
+        all_results.extend({"type": "vector", "data": item} for item in vector_context)
+        
+        filtered_results, validation_info = self.rails_orchestrator.retrieval_rails.validate_retrieval_results(
+            all_results,
+            retrieval_decision
+        )
+        
+        # Separate back into graph and vector contexts
+        graph_context = [item["data"] for item in filtered_results if item["type"] == "graph"]
+        vector_context = [item["data"] for item in filtered_results if item["type"] == "vector"]
+        sources = filtered_results
+        
         # Fallback to vector-only if graph search fails or no results
         if not graph_context and not vector_context:
-            vector_context = self.qdrant.search(state["query"], state.get("top_k", 8))
-            sources.extend({"type": "vector", "data": item} for item in vector_context)
-        return {"graph_context": graph_context, "vector_context": vector_context, "sources": sources}
+            vector_context = self.qdrant.search(state["query"], max_results)
+            sources = [{"type": "vector", "data": item} for item in vector_context]
+        
+        return {
+            "graph_context": graph_context,
+            "vector_context": vector_context,
+            "sources": sources,
+            "retrieval_validation": validation_info
+        }
 
     def _build_context(self, state: GraphState) -> dict[str, str]:
         blocks = [f"Conversation history:\n{self.memory.summary(state['session_id'])}"]
@@ -263,7 +305,15 @@ Context:
 
     def health(self) -> dict[str, str]:
         rails_ok = "ok" if hasattr(self, "guards") and self.guards.rails.get("flows") else "error"
-        return {"gemini": "ok" if self.llm else "not_configured", "qdrant": self.qdrant.health(), "neo4j": self.neo4j.health(), "guardrails": rails_ok, "langsmith": "enabled" if self.settings.effective_langsmith_api_key else "not_configured"}
+        rails_orchestrator_ok = "ok" if hasattr(self, "rails_orchestrator") else "error"
+        return {
+            "gemini": "ok" if self.llm else "not_configured", 
+            "qdrant": self.qdrant.health(), 
+            "neo4j": self.neo4j.health(), 
+            "guardrails": rails_ok, 
+            "rails_orchestrator": rails_orchestrator_ok,
+            "langsmith": "enabled" if self.settings.effective_langsmith_api_key else "not_configured"
+        }
 
     def reconnect(self) -> dict[str, Any]:
         """Force-retry all DB connections (sidebar button). Bypasses cooldowns."""
@@ -283,4 +333,9 @@ Context:
             base["rails_exists"] = bool(rails_path) and _Path(str(rails_path)).exists()
         except Exception:
             base["rails_exists"] = False
+        
+        # Add rails orchestrator status
+        if hasattr(self, "rails_orchestrator"):
+            base["rails_orchestrator_status"] = self.rails_orchestrator.get_rails_status()
+        
         return base

@@ -1,0 +1,11 @@
+id,question,expected_answer,intent,plan,source
+A001,How many companies are in the dataset?,113,FACTUAL,LOCAL,stock_company.csv
+A002,How many companies are Indian-origin?,Count of country_of_origin == India.,FACTUAL,LOCAL,stock_company.csv
+A003,How many companies are Chinese-origin?,Count of country_of_origin == China.,FACTUAL,LOCAL,stock_company.csv
+A004,How many companies have high risk exposure?,Count of risk_exposure == High in grouped CSV.,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+A005,How many companies have moderate risk exposure?,Count of risk_exposure == Moderate.,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+A006,How many companies have low risk exposure?,Count of risk_exposure == Low.,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv
+A007,How many companies have confirmed deals?,Count of status == Confirmed in stock_report.csv.,FACTUAL,LOCAL,stock_report.csv
+A008,How many companies have deals under discussion?,Count of status == Under Discussion.,FACTUAL,LOCAL,stock_report.csv
+A009,How many companies have banned operations?,Count of status == Operations_Banned — TikTok, Shein, Club Factory, Romwe = 4.,FACTUAL,LOCAL,stock_company.csv
+A010,How many industry groups are in the dataset?,Count of unique industry_group values.,FACTUAL,LOCAL,Stock_industry_grouped_w_code.csv

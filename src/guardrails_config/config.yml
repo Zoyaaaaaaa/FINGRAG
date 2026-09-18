@@ -9,7 +9,7 @@ models:
   # Main + topical-reasoning model — single Gemini model for everything.
   - type: main
     engine: google_genai
-    model: gemini-3-flash-preview
+    model: gemini-3.5-flash
     api_key_env_var: GOOGLE_API_KEY
     parameters:
       temperature: 0.1
