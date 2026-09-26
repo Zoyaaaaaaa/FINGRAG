@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=None, extra="ignore", case_sensitive=False)
 
     google_api_key: str = Field(default="", validation_alias=AliasChoices("GOOGLE_API_KEY", "GEMINI_API_KEY"))
-    gemini_model: str = Field(default="gemini-3-flash-preview", validation_alias=AliasChoices("GEMINI_MODEL", "GEMINI_MODEL_NAME"))
+    gemini_model: str = Field(default="gemini-3.5-flash", validation_alias=AliasChoices("GEMINI_MODEL", "GEMINI_MODEL_NAME"))
     embedding_model: str = Field(default="models/gemini-embedding-001", validation_alias="EMBEDDING_MODEL")
     embedding_dimensions: int = Field(default=3072, validation_alias="EMBEDDING_DIMENSIONS")
 

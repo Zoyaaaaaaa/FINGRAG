@@ -70,7 +70,47 @@ def query(request: QueryRequest) -> QueryResponse:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
 
+@app.get("/cache/stats")
+def cache_stats() -> dict[str, any]:
+    """Get detailed cache statistics."""
+    from src.tools.semantic_cache import MultiLayerCache
+    from src.config.settings import get_settings
+    
+    cache = MultiLayerCache(get_settings())
+    return cache.get_cache_stats()
+
+@app.post("/cache/warmup")
+def cache_warmup() -> dict[str, str]:
+    """Warm up cache with common queries."""
+    from src.tools.semantic_cache import MultiLayerCache
+    from src.config.settings import get_settings
+    from src.orchestrator import FinGraphRAG
+    
+    settings = get_settings()
+    cache = MultiLayerCache(settings)
+    system = FinGraphRAG(settings)
+    
+    def query_func(query: str) -> str:
+        result = system.query(query, session_id="cache_warmup", top_k=5)
+        return result.get("answer", "")
+    
+    try:
+        cache.warmup_cache(query_func)
+        return {"status": "success", "message": "Cache warmup completed"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.delete("/memory/{session_id}")
 def clear_memory(session_id: str) -> dict[str, str]:
     system.memory.clear(session_id)
     return {"status": "cleared", "session_id": session_id}
+
+@app.delete("/cache")
+def clear_cache() -> dict[str, str]:
+    """Clear all cache layers."""
+    from src.tools.semantic_cache import MultiLayerCache
+    from src.config.settings import get_settings
+    
+    cache = MultiLayerCache(get_settings())
+    cache.clear()
+    return {"status": "cleared", "message": "All cache layers cleared"}

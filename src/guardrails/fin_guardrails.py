@@ -148,8 +148,12 @@ def _gemini_classify(query: str, scope_hits: list[str], settings: Any) -> dict[s
     )
     prompt = (
         "You are the topical classifier for FinGraphRAG (Colang canonical forms).\n"
-        "In-scope = questions about Indian companies and their Chinese partners, "
-        "deal types, sectors, industries, risk exposure in the knowledge base.\n"
+        "In-scope = ANY question answerable from the company knowledge base: "
+        "Indian companies and their Chinese partners, deal/relationship types, "
+        "company codes/tickers/stock codes, exchanges (NSE/BSE), sectors, industries, "
+        "industry groups, country of origin, operating status, report dates, "
+        "sources/reporters, Chinese presence level, risk exposure, key players, "
+        "deal status, stake percentages.\n"
         "Off-topic = everything else (jokes, capital cities, poems, math, dinner, games, movies, weather, elections, generic coding).\n"
         f"Off-topic examples: {json.dumps(off_examples)}\n"
         f"Financial examples: {json.dumps(fin_examples)}\n"

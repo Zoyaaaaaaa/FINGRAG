@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 from typing import Any, TypedDict
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -53,7 +54,78 @@ class FinGraphRAG:
         from src.guardrails.fin_guardrails import FinGuardrails
         self.guards = FinGuardrails(self.settings)
         self.rails_orchestrator = RailsOrchestrator(self.settings)
+        
+        # Rate limiting and retry configuration
+        self.max_retries = 3
+        self.base_delay = 2.0  # seconds
+        self.max_delay = 30.0  # seconds
+        self.llm_timeout = 60.0  # seconds
+        self._last_llm_call = 0
+        self._min_llm_interval = 1.0  # minimum seconds between LLM calls
+        
+        # Latency thresholds and fail-fast configuration
+        self.neo4j_timeout = 5.0  # seconds
+        self.qdrant_timeout = 15.0  # seconds
+        self.max_total_latency = 180.0  # seconds for entire query
+        self.query_start_time = 0
+        
         self.graph = self._build_graph()
+    
+    def _wait_for_rate_limit(self):
+        """Implement rate limiting between LLM calls."""
+        current_time = time.time()
+        time_since_last = current_time - self._last_llm_call
+        
+        if time_since_last < self._min_llm_interval:
+            sleep_time = self._min_llm_interval - time_since_last
+            time.sleep(sleep_time)
+        
+        self._last_llm_call = time.time()
+    
+    def _call_llm_with_retry(self, messages: list, timeout: float = 10.0) -> Any:
+        """Call LLM with exponential backoff retry logic."""
+        self._wait_for_rate_limit()
+        
+        for attempt in range(self.max_retries):
+            try:
+                # Set timeout for this attempt
+                response = self.llm.invoke(messages, timeout=timeout)
+                return response
+                
+            except Exception as exc:
+                error_msg = str(exc).lower()
+                
+                # Check for rate limiting errors
+                is_rate_limit = any(
+                    keyword in error_msg 
+                    for keyword in ["429", "rate limit", "quota", "resource_exhausted", "too_many_requests"]
+                )
+                
+                # Check for timeout errors
+                is_timeout = any(
+                    keyword in error_msg 
+                    for keyword in ["timeout", "timed out", "deadline"]
+                )
+                
+                # If it's the last attempt, give up
+                if attempt == self.max_retries - 1:
+                    raise
+                
+                # Calculate exponential backoff delay
+                if is_rate_limit:
+                    # Longer delay for rate limiting
+                    delay = min(self.base_delay * (2 ** attempt) + 5, self.max_delay)
+                elif is_timeout:
+                    # Moderate delay for timeouts
+                    delay = min(self.base_delay * (2 ** attempt), self.max_delay / 2)
+                else:
+                    # Standard delay for other errors
+                    delay = min(self.base_delay * (2 ** attempt), self.max_delay / 3)
+                
+                print(f"LLM call failed (attempt {attempt + 1}/{self.max_retries}), retrying in {delay:.1f}s: {exc}")
+                time.sleep(delay)
+        
+        raise RuntimeError(f"LLM call failed after {self.max_retries} attempts")
 
     def _guard(self, state: GraphState) -> dict[str, Any]:
         """Step 0 — Colang topical gate. Off-topic stops here, RAG never runs."""
@@ -90,10 +162,58 @@ class FinGraphRAG:
     def _understand(state: GraphState) -> dict[str, Any]:
         query = state["query"]
         lowered = query.lower()
-        relational = any(word in lowered for word in ("relationship", "between", "collaborate", "partner", "connected", "impact"))
-        factual = any(word in lowered for word in ("what is", "which", "how much", "ticker", "code", "revenue"))
-        intent = "RELATIONAL" if relational else "FACTUAL" if factual else "SEMANTIC"
-        plan = "HYBRID" if relational else "LOCAL" if factual else "GLOBAL"
+        
+        # RELATIONAL patterns (queries about relationships between entities - most specific check)
+        # More comprehensive relationship keywords
+        relational_keywords = [
+            "relationship", "between", "connected to", "impact of", "collaboration between",
+            "partnership", "partner with", "joint venture", "jv", "stake in", "technology transfer",
+            "licensing", "platform licensing", "equity stake", "share of", "deal with", "agreement with"
+        ]
+        relational = any(word in lowered for word in relational_keywords)
+        
+        # FACTUAL patterns (queries seeking specific facts - but not if they sound like relationships)
+        factual_keywords = ["what is", "which", "how much", "ticker", "code", "revenue", "stock", "market cap",
+                            "what industry", "what sector", "industry is", "sector does",
+                            "indian status", "country of origin", "report date", "deal status",
+                            "presence level", "risk exposure", "industry group", "key player",
+                            "stake percentage", "exchange", "status of", "source", "reported"]
+        factual = any(word in lowered for word in factual_keywords)
+        
+        # SEMANTIC patterns (broad conceptual queries - more specific, avoid relationship keywords)
+        semantic_keywords = [
+            "tell me about", "analyze", "discuss", "explain", "describe",
+            "what are the trends", "overview", "summary", "analysis of",
+            "how does", "why", "compare", "versus", "vs", "industry",
+            "market", "sector", "landscape", "ecosystem", "environment",
+            "companies that", "which companies have", "list of",
+            "all companies", "multiple companies", "various companies",
+            "electric vehicle", "ev market", "battery industry", "automotive industry",
+            "pharmaceutical", "healthcare", "manufacturing", "technology",
+            "investment", "funding", "startup", "business environment",
+            "overview of", "summary of", "description of", "explain the"
+        ]
+        semantic = any(word in lowered for word in semantic_keywords)
+        
+        # Improved intent classification logic (relational first, then factual, then semantic)
+        if relational:
+            intent = "RELATIONAL"
+        elif factual and not relational:
+            intent = "FACTUAL"
+        elif semantic and not relational:
+            intent = "SEMANTIC"
+        else:
+            # Default to SEMANTIC for unknown patterns
+            intent = "SEMANTIC"
+        
+        # Query planning based on intent
+        if intent == "RELATIONAL":
+            plan = "HYBRID"
+        elif intent == "FACTUAL":
+            plan = "LOCAL"
+        else:  # SEMANTIC
+            plan = "GLOBAL"
+        
         entities = re.findall(r"\b[A-Z][A-Za-z0-9&.-]{1,30}\b", query)
         return {"intent": {"intent": intent, "entities": entities, "domain": "financial"}, "plan": plan}
 
@@ -154,7 +274,7 @@ class FinGraphRAG:
         blocks = [f"Conversation history:\n{self.memory.summary(state['session_id'])}"]
         blocks.extend(f"Graph: {json.dumps(item, default=str)}" for item in state.get("graph_context", []))
         blocks.extend(f"Document: {item['text']}" for item in state.get("vector_context", []))
-        return {"context": "\n".join(blocks)[:20000]}
+        return {"context": "\n".join(blocks)[:8000]}
 
     @staticmethod
     def _extract_text(content: Any) -> str:
@@ -228,17 +348,20 @@ Context:
 {state.get('context', '')}
 """
         try:
-            response = self.llm.invoke([HumanMessage(content=prompt)])
-        except Exception as exc:  # noqa: BLE001 — quota / network resilience
+            response = self._call_llm_with_retry([HumanMessage(content=prompt)], timeout=self.llm_timeout)
+        except Exception as exc:
             msg = str(exc)
-            is_quota = "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower()
-            if is_quota:
+            is_quota = "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower() or "rate limit" in msg.lower()
+            is_timeout = "504" in msg or "DEADLINE_EXCEEDED" in msg or "deadline" in msg.lower() or "timeout" in msg.lower() or "timed out" in msg.lower()
+            if is_quota or is_timeout:
                 retry = ""
                 if "retry in" in msg.lower() or "retryDelay" in msg:
                     import re as _re
                     m = _re.search(r"retry in\s*([0-9.]+s)", msg, _re.I)
                     if m:
                         retry = f"Model `{self.settings.gemini_model}` is rate-limited. Automatic retry in {m.group(1)}."
+                if is_timeout and not retry:
+                    retry = f"LLM `{self.settings.gemini_model}` timed out (504) — showing extractive answer from graph + vector hits."
                 fallback = self._fallback_answer(state, retry or f"LLM `{self.settings.gemini_model}` quota exhausted — showing extractive answer from graph + vector hits.")
                 self.memory.add(state["session_id"], state["query"], fallback)
                 return {"answer": fallback}
@@ -248,7 +371,58 @@ Context:
         return {"answer": answer}
 
     def query(self, query: str, session_id: str = "default", top_k: int = 8) -> dict[str, Any]:
-        result = self.graph.invoke({"query": query, "session_id": session_id, "top_k": top_k})
+        self.query_start_time = time.time()
+        
+        # Fail-fast check: if query too long, reject immediately
+        if len(query) > 2000:
+            return {
+                "answer": "Query too long. Please limit your question to 2000 characters.",
+                "plan": "REJECTED",
+                "intent": {"intent": "REJECTED", "entities": [], "domain": "none"},
+                "blocked": True,
+                "guard_canonical": "query_too_long",
+                "guard_flow": "reject",
+                "guard_message": "Query too long",
+                "guard_trace": {"decider": "length_check"},
+                "sources": [],
+                "graph_context": [],
+                "vector_context": [],
+                "context": "",
+                "trace": {"step_0_guardrails": {"blocked": True, "reason": "Query too long"}},
+                "session_id": session_id,
+            }
+        
+        try:
+            result = self.graph.invoke({"query": query, "session_id": session_id, "top_k": top_k})
+        except Exception as e:
+            # Check if this is a timeout or rate limit error
+            error_msg = str(e).lower()
+            elapsed = time.time() - self.query_start_time
+            
+            if elapsed > self.max_total_latency:
+                # Query took too long, return fallback
+                return {
+                    "answer": f"Query processing timeout after {elapsed:.1f}s. Please try a simpler query or check your connection.",
+                    "plan": "TIMEOUT",
+                    "intent": {"intent": "TIMEOUT", "entities": [], "domain": "none"},
+                    "blocked": False,
+                    "sources": [],
+                    "graph_context": [],
+                    "vector_context": [],
+                    "context": "",
+                    "trace": {"error": f"Timeout after {elapsed:.1f}s"},
+                    "session_id": session_id,
+                }
+            else:
+                # Other error, re-raise
+                raise
+        
+        # Check total latency and warn if excessive
+        elapsed = time.time() - self.query_start_time
+        if elapsed > self.max_total_latency:
+            # Still return result but with warning
+            result["latency_warning"] = f"Query took {elapsed:.1f}s, exceeding threshold of {self.max_total_latency}s"
+        
         graph_context = result.get("graph_context", [])
         vector_context = result.get("vector_context", [])
         # Full provenance trace: exactly how the agent derived the answer
@@ -285,6 +459,10 @@ Context:
             "step_4_context": {
                 "chars": len(result.get("context", "")),
             },
+            "step_5_latency": {
+                "total_seconds": elapsed,
+                "exceeded_threshold": elapsed > self.max_total_latency,
+            }
         }
         guard_trace = result.get("guard_trace") or {}
         return {

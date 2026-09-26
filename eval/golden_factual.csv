@@ -15,10 +15,10 @@ F013,What is the Indian status of BYD India?,Operating,FACTUAL,LOCAL,stock_compa
 F014,What is the country of origin for Haier India?,China,FACTUAL,LOCAL,stock_company.csv
 F015,What is the country of origin for Hyundai India?,Korea,FACTUAL,LOCAL,stock_company.csv
 F016,What is the country of origin for BMW India?,Germany,FACTUAL,LOCAL,stock_company.csv
-F017,What is the relationship type between Reliance and CATL?,Technology_Partnership,FACTUAL,LOCAL,stock_company.csv
-F018,What is the relationship type between Bharti and Haier?,49_Pct_JV,FACTUAL,LOCAL,stock_company.csv
-F019,What is the relationship type between Tata Motors and Chery_AESC?,Platform_Licensing,FACTUAL,LOCAL,stock_company.csv
-F020,What is the deal type between Reliance and CATL?,Technology Partnership,FACTUAL,LOCAL,stock_report.csv
+F017,What is the relationship type between Reliance and CATL?,Technology_Partnership,RELATIONAL,HYBRID,stock_company.csv
+F018,What is the relationship type between Bharti and Haier?,49_Pct_JV,RELATIONAL,HYBRID,stock_company.csv
+F019,What is the relationship type between Tata Motors and Chery_AESC?,Platform_Licensing,RELATIONAL,HYBRID,stock_company.csv
+F020,What is the deal type between Reliance and CATL?,Technology Partnership,RELATIONAL,HYBRID,stock_report.csv
 F021,What is the status of the Reliance-CATL deal?,Under Discussion,FACTUAL,LOCAL,stock_report.csv
 F022,What is the status of the JSW-Chery deal?,Confirmed,FACTUAL,LOCAL,stock_report.csv
 F023,What is the status of the Sona BLW-Jinnaite JV?,Abeyance,FACTUAL,LOCAL,stock_report.csv

@@ -43,18 +43,26 @@ class InputRails:
             r"system\s*\(",  # system calls
         ]
         
-        # SQL injection patterns
+        # SQL injection patterns (more comprehensive)
         self.sql_patterns = [
-            r"DROP\s+TABLE",
-            r"DELETE\s+FROM",
-            r"TRUNCATE\s+TABLE",
-            r"ALTER\s+TABLE",
-            r"INSERT\s+INTO",
-            r"UPDATE\s+\w+\s+SET",
-            r"UNION\s+SELECT",
-            r"OR\s+1\s*=\s*1",
-            r";\s*DROP",
-            r";\s*DELETE",
+            r";\s*DROP\s+TABLE",  # DROP TABLE with semicolon
+            r";\s*DELETE\s+FROM",  # DELETE FROM with semicolon
+            r";\s*TRUNCATE\s+TABLE",  # TRUNCATE with semicolon
+            r";\s*ALTER\s+TABLE",  # ALTER TABLE with semicolon
+            r";\s*INSERT\s+INTO",  # INSERT INTO with semicolon
+            r";\s*UPDATE\s+\w+\s+SET",  # UPDATE with semicolon
+            r"DROP\s+TABLE",  # DROP TABLE (even without semicolon)
+            r"DELETE\s+FROM",  # DELETE FROM (even without semicolon)
+            r"TRUNCATE\s+TABLE",  # TRUNCATE (even without semicolon)
+            r"UNION\s+SELECT",  # UNION SELECT injection
+            r"OR\s+1\s*=\s*1",  # OR 1=1 injection
+            r"AND\s+1\s*=\s*1",  # AND 1=1 injection
+            r"EXEC\s*\(",  # EXEC commands
+            r"EXECUTE\s*\(",  # EXECUTE commands
+            r"xp_cmdshell",  # SQL Server command execution
+            r"sp_oacreate",  # SQL Server command execution
+            r"\'\s*OR\s*",  # SQL injection with quotes
+            r"\".*OR.*\"",  # SQL injection with double quotes
         ]
         
         # Unsafe character sequences
@@ -92,9 +100,10 @@ class InputRails:
                     severity="high"
                 )
         
-        # Check for SQL injection patterns
+        # Check for SQL injection patterns (more comprehensive check)
+        query_lower = query.lower()
         for pattern in self.sql_patterns:
-            if re.search(pattern, query, re.IGNORECASE):
+            if re.search(pattern, query_lower, re.IGNORECASE):
                 return InputValidationResult(
                     is_valid=False,
                     sanitized_query="",

@@ -1,0 +1,80 @@
+================================================================================
+FinGraphRAG Evaluation Report
+================================================================================
+
+OVERALL METRICS
+----------------------------------------
+Total Tests: 40
+Intent Accuracy: 37.50%
+Plan Accuracy: 37.50%
+Answer Relevance: 52.33%
+Retrieval Precision: 0.00%
+Retrieval Recall: 0.00%
+F1 Score: 0.00%
+Cache Hit Rate: 7.50%
+Rails Effectiveness: 0.00%
+
+LATENCY METRICS
+----------------------------------------
+Average Latency: 5059.56ms
+Cached Latency: 799.06ms
+Uncached Latency: 5405.00ms
+
+PER-INTENT METRICS
+----------------------------------------
+FACTUAL:
+  Count: 40
+  Accuracy: 37.50%
+  Relevance: 52.33%
+  Latency: 5059.56ms
+
+PER-PLAN METRICS
+----------------------------------------
+LOCAL:
+  Count: 40
+  Accuracy: 37.50%
+  Relevance: 52.33%
+  Latency: 5059.56ms
+
+FAILED TESTS
+----------------------------------------
+F001: What is the company code for Reliance Industries?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.90
+F002: What is the company code for Adani Group?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.90
+F003: What is the company code for JSW Group?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.00
+F004: What is the company code for Tata Motors?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.00
+F005: What industry is Reliance Industries in?
+  Intent: FACTUAL -> SEMANTIC (FAIL)
+  Plan: LOCAL -> GLOBAL (FAIL)
+  Relevance: 0.90
+F006: What industry is Adani Group in?
+  Intent: FACTUAL -> SEMANTIC (FAIL)
+  Plan: LOCAL -> GLOBAL (FAIL)
+  Relevance: 0.90
+F007: What industry is Bharti Enterprises in?
+  Intent: FACTUAL -> SEMANTIC (FAIL)
+  Plan: LOCAL -> GLOBAL (FAIL)
+  Relevance: 0.90
+F008: What sector does Tata Motors operate in?
+  Intent: FACTUAL -> SEMANTIC (FAIL)
+  Plan: LOCAL -> GLOBAL (FAIL)
+  Relevance: 0.90
+F009: What sector does Sun Pharma operate in?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.00
+F010: Which exchange are all companies listed on?
+  Intent: FACTUAL -> UNKNOWN (FAIL)
+  Plan: LOCAL ->  (FAIL)
+  Relevance: 0.00

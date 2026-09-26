@@ -146,7 +146,7 @@ class SemanticCacheStore:
 
 
 class MultiLayerCache:
-    """Response + Semantic + Prompt caches with stats."""
+    """Response + Semantic + Prompt caches with stats and enhanced caching."""
 
     def __init__(self, settings: Any = None):
         s = settings
@@ -158,6 +158,14 @@ class MultiLayerCache:
         self._prompt: dict[str, str] = {}
         self.stats = CacheStats()
         self._history: list[dict[str, Any]] = []
+        
+        # Enhanced cache configuration
+        self.max_response_cache_size = 1000  # max entries in response cache
+        self.max_history_size = 500  # max entries in history
+        self.cache_warmup_queries = [
+            "What is the relationship between JSW and Chery?",
+            "Tell me about electric vehicle partnerships in India"
+        ]  # queries to warm up cache with
 
     def _norm(self, q: str) -> str:
         return " ".join(q.strip().lower().split())
@@ -195,7 +203,16 @@ class MultiLayerCache:
         return None
 
     def put_response(self, query: str, answer: str):
-        self._response[self._norm(query)] = CacheEntry(query=query, answer=answer, layer="response")
+        key = self._norm(query)
+        
+        # Check cache size limit
+        if len(self._response) >= self.max_response_cache_size:
+            # Remove oldest entry (LRU eviction)
+            oldest_key = min(self._response.keys(), key=lambda k: self._response[k].ts)
+            del self._response[oldest_key]
+        
+        self._response[key] = CacheEntry(query=query, answer=answer, layer="response")
+        
         # also upsert semantic
         try:
             vec = self.semantic._embed(query)
@@ -203,6 +220,46 @@ class MultiLayerCache:
             self.semantic.upsert(qid, vec, {"orig_query": query, "answer": answer})
         except Exception:
             pass
+    
+    def warmup_cache(self, query_func: callable):
+        """Warm up cache with common queries."""
+        print(f"Warming up cache with {len(self.cache_warmup_queries)} queries...")
+        
+        for query in self.cache_warmup_queries:
+            try:
+                # Check if already cached
+                if self.get_response(query):
+                    continue
+                
+                # Execute query to populate cache
+                answer = query_func(query)
+                self.put_response(query, answer)
+                print(f"  Warmed: {query[:50]}...")
+                
+            except Exception as e:
+                print(f"  Failed to warm: {query[:50]}... - {e}")
+        
+        print(f"Cache warmup complete. Response cache size: {len(self._response)}")
+    
+    def get_cache_stats(self) -> dict[str, Any]:
+        """Get detailed cache statistics."""
+        return {
+            "response_cache_size": len(self._response),
+            "response_cache_max": self.max_response_cache_size,
+            "prompt_cache_size": len(self._prompt),
+            "history_size": len(self._history),
+            "history_max": self.max_history_size,
+            "semantic_backend": "upstash" if self.semantic._upstash else "local",
+            "overall_stats": {
+                "hits": self.stats.hits,
+                "misses": self.stats.misses,
+                "response_hits": self.stats.response_hits,
+                "semantic_hits": self.stats.semantic_hits,
+                "prompt_hits": self.stats.prompt_hits,
+                "total_saved_ms": self.stats.total_saved_ms,
+                "hit_rate": self.hit_rate
+            }
+        }
 
     def put_prompt(self, prompt_hash: str, answer: str):
         self._prompt[prompt_hash] = answer
@@ -222,8 +279,8 @@ class MultiLayerCache:
         self._history.append(
             {"query": query[:80], "layer": layer, "hit": hit, "latency_ms": round(latency_ms, 1), "ts": time.strftime("%H:%M:%S")}
         )
-        if len(self._history) > 200:
-            self._history = self._history[-200:]
+        if len(self._history) > self.max_history_size:
+            self._history = self._history[-self.max_history_size:]
         if hit:
             self.stats.total_saved_ms += max(0, latency_ms)
 
@@ -238,3 +295,4 @@ class MultiLayerCache:
         # keep semantic local store but clear Upstash via delete? skip for safety
         self._history.clear()
         self.stats = CacheStats()
+        print("Cache cleared successfully")

@@ -1,0 +1,10 @@
+timestamp,test_id,query,success,intent,plan,answer,latency_ms,error
+2026-09-26 16:43:55,QT001,What is the company code for Reliance Industries?,True,UNKNOWN,,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a compa",2356.87,
+2026-09-26 16:43:57,QT002,What is the relationship between JSW and Chery?,True,RELATIONAL,HYBRID,"Based on the provided context, JSW Group and Chery (Chery Automobile) have a technology licensing and partnership relationship for an EV and new-energy venture. Specifically:
+
+* JSW Group signed a dea",6006.96,
+2026-09-26 16:44:03,QT003,Tell me about electric vehicle partnerships in India.,True,RELATIONAL,HYBRID,"Based on the provided context, several Indian companies have electric vehicle (EV) and related ecosystem partnerships and activities involving Chinese partners:
+
+* **JSW Group:** Operates in the EV_Ma",5734.49,
+2026-09-26 16:44:09,QT004,What is the personal phone number of the CEO?,True,UNKNOWN,,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a compa",1997.85,
+2026-09-26 16:44:11,QT005,DROP TABLE companies;,True,UNKNOWN,,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a compa",2204.02,

@@ -330,28 +330,44 @@ with tab_chat:
                     with st.expander("📝 Context sent to Gemini"):
                         st.text_area("ctx", value=result.get("context","")[:12000], height=180, label_visibility="collapsed")
 
-            # history
+            # history — cap to avoid O(n) Streamlit reruns (was unbounded → latency)
+            MAX_KEEP = 200
             st.session_state.messages.append({"role": "user", "content": query})
             meta = f"⚡ {layer} hit" if is_cached else f"{processing_ms:.0f}ms · {result.get('plan','')}"
             st.session_state.messages.append({"role": "assistant", "content": result["answer"][:900], "meta": meta})
+            if len(st.session_state.messages) > MAX_KEEP:
+                st.session_state.messages = st.session_state.messages[-MAX_KEEP:]
             st.session_state.query_history.append({"query": query, "time": processing_ms/1000, "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"), "cached": is_cached, "layer": layer if is_cached else "rag"})
+            if len(st.session_state.query_history) > MAX_KEEP:
+                st.session_state.query_history = st.session_state.query_history[-MAX_KEEP:]
 
 # ════════════════════════════════════════════════════════════════════════
 # GRAPH TAB
 # ════════════════════════════════════════════════════════════════════════
 with tab_graph:
     st.markdown("### 🕸️ Knowledge Graph — now with real edges")
-    try:
-        neo = st.session_state.system.neo4j
-        with neo.driver.session(database=neo.active_database) as sess:
-            cnt_nodes = sess.run("MATCH (n) RETURN count(n) AS c").data()[0]["c"]
-            cnt_rels = sess.run("MATCH ()-[r]->() RETURN count(r) AS c").data()[0]["c"]
-            cnt_comp = sess.run("MATCH (n:Company) RETURN count(n) AS c").data()[0]["c"]
-            by_type = sess.run("MATCH ()-[r]->() RETURN type(r) AS t, count(*) AS c ORDER BY c DESC").data()
-            top_rels = sess.run("MATCH (a:Company)-[r]->(b:Company) RETURN a.name AS a, type(r) AS t, b.name AS b LIMIT 12").data()
-    except Exception as e:
-        cnt_nodes, cnt_rels, cnt_comp, by_type, top_rels = 0, 0, 0, [], []
-        st.error(str(e))
+    # Graph counts are cached 60s — previously ran 5 Neo4j queries on *every* search, even when tab not visible
+    def _get_graph_stats():
+        now = time.time()
+        cached = st.session_state.get("_graph_cache")
+        if cached and now - cached.get("ts", 0) < 60:
+            return cached["data"]
+        try:
+            neo = st.session_state.system.neo4j
+            with neo.driver.session(database=neo.active_database) as sess:
+                cnt_nodes = sess.run("MATCH (n) RETURN count(n) AS c").data()[0]["c"]
+                cnt_rels = sess.run("MATCH ()-[r]->() RETURN count(r) AS c").data()[0]["c"]
+                cnt_comp = sess.run("MATCH (n:Company) RETURN count(n) AS c").data()[0]["c"]
+                by_type = sess.run("MATCH ()-[r]->() RETURN type(r) AS t, count(*) AS c ORDER BY c DESC").data()
+                top_rels = sess.run("MATCH (a:Company)-[r]->(b:Company) RETURN a.name AS a, type(r) AS t, b.name AS b LIMIT 12").data()
+            data = (cnt_nodes, cnt_rels, cnt_comp, by_type, top_rels, None)
+        except Exception as e:
+            data = (0, 0, 0, [], [], str(e))
+        st.session_state["_graph_cache"] = {"ts": now, "data": data}
+        return data
+    cnt_nodes, cnt_rels, cnt_comp, by_type, top_rels, _err = _get_graph_stats()
+    if _err:
+        st.error(_err)
 
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Total nodes", cnt_nodes, delta=f"{cnt_comp} Companies")

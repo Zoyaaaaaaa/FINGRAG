@@ -1,0 +1,131 @@
+timestamp,test_id,question,expected_answer,actual_answer,expected_intent,actual_intent,intent_correct,expected_plan,actual_plan,plan_correct,answer_relevance,latency_ms,cache_hit,cache_layer,blocked,sources_count,graph_context_count,vector_context_count,retrieval_precision,retrieval_recall,error
+2026-09-26 17:01:18,F001,What is the company code for Reliance Industries?,RELIANCE,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.9000,4368.44,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F002,What is the company code for Adani Group?,ADANI,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.9000,3062.17,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F003,What is the company code for JSW Group?,JSW,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0046,3905.29,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F004,What is the company code for Tata Motors?,TATAMOTORS,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,3307.07,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F005,What industry is Reliance Industries in?,EV_Batteries,"Based on the provided context, Reliance Industries operates in the **EV_Batteries** industry within the Energy sector. 
+
+**Source References:**
+* Document: `company_code: RELIANCE | company_name: Reliance Industries | industry: EV_Batteries | sector: Energy`
+* Document: `## Reliance Industries (RELIANCE) Reliance Industries is an Indian company operating in the EV_Batteries industry within the Energy sector.`",FACTUAL,SEMANTIC,False,LOCAL,GLOBAL,False,0.9000,6307.02,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F006,What industry is Adani Group in?,EV_Manufacturing,"Based on the provided context, Adani Group is in the **Conglomerate** industry (and is also associated with the **EV_Manufacturing** industry in the Automotive sector within the context documents). 
+
+**Source References:**
+* Document: `company_code: ADANI | company_name: Adani Group | industry: Conglomerate | sector: Infrastructure | ...`
+* Document: `industry_group: EV_Ecosystem | industry: EV_Manufacturing | sector: Automotive | stock_code: ADANI | company_name: Adani Group | ...`",FACTUAL,SEMANTIC,False,LOCAL,GLOBAL,False,0.9000,7568.49,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F007,What industry is Bharti Enterprises in?,Consumer_Electronics,"Based on the provided context, Bharti Enterprises operates in the **Consumer_Electronics** industry (and is also noted to belong to the **Appliances** industry within the Consumer_Durables industry group) within the Retail sector.
+
+**Source References:**
+* Document: `company_code: BHARTI | company_name: Bharti Enterprises | industry: Consumer_Electronics | sector: Retail | ...`
+* Document: `industry_group: Consumer_Durables | industry: Appliances | sector: Retail | stock_code: BHARTI | company_name: Bharti Enterprises | ...`",FACTUAL,SEMANTIC,False,LOCAL,GLOBAL,False,0.9000,12987.00,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F008,What sector does Tata Motors operate in?,Automotive,"Based on the provided context, Tata Motors operates in the **Manufacturing** sector (and is also associated with the **Energy** sector within the context documents).
+
+**Source References:**
+* Document: `company_code: TATAMOTORS | company_name: Tata Motors | industry: Automotive | sector: Manufacturing | exchange: NSE/BSE | ...`
+* Document: `industry_group: EV_Ecosystem | industry: EV_Batteries | sector: Energy | stock_code: TATAMOTORS | company_name: Tata Motors | ...`",FACTUAL,SEMANTIC,False,LOCAL,GLOBAL,False,0.9000,6287.35,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F009,What sector does Sun Pharma operate in?,Healthcare,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,2905.72,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F010,Which exchange are all companies listed on?,NSE/BSE,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,2856.09,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F011,What is the Indian status of Great Wall Motors India?,Inactive,"Based on the provided context, there is no mention of Great Wall Motors India. Therefore, the context is insufficient to answer your question.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0480,4743.65,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F012,What is the Indian status of TikTok India?,Inactive,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0045,3238.50,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F013,What is the Indian status of BYD India?,Operating,"Based on the provided context, there is no mention of BYD India. Therefore, the context is insufficient to answer your question.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0613,4318.63,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F014,What is the country of origin for Haier India?,China,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,2881.67,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F015,What is the country of origin for Hyundai India?,Korea,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0046,3005.85,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F016,What is the country of origin for BMW India?,Germany,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,3097.51,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F017,What is the relationship type between Reliance and CATL?,Technology_Partnership,"The relationship type between Reliance and CATL is a **Technology Partnership** (or `Technology_Partnership`). 
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""Technology_Partnership"", ""company_name"": ""Reliance Industries"", ""chinese_partner"": ""CATL"", ...}`
+* Documents: `stock_company.csv`, `stock_report.csv`, and company profile overview for Reliance Industries (`stock_report.csv` / DNA India, 2025-08-20).",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,7172.41,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F018,What is the relationship type between Bharti and Haier?,49_Pct_JV,"The relationship type between Bharti (Bharti Enterprises) and Haier is a **49% JV** (or `49_Pct_JV`), characterized by Bharti and Warburg Pincus acquiring a 49% stake in Haier India, while Haier retains 49%.
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""49_Pct_JV"", ""company_name"": ""Bharti Enterprises"", ""chinese_partner"": ""Haier"", ...}` and `stock_report.csv` graph node with `deal_type: ""49% JV""`.
+* Documents: `stock_company.csv`, `stock_report.csv`, and DNA India report (2025-12-23).",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,7486.96,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F019,What is the relationship type between Tata Motors and Chery_AESC?,Platform_Licensing,"The relationship type between Tata Motors and Chery_AESC is **Platform Licensing** (or `Platform_Licensing`).
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""Platform_Licensing"", ""company_name"": ""Tata Motors"", ""chinese_partner"": ""Chery_AESC"", ...}`
+* Documents: `stock_company.csv` and company overview records for Tata Motors.",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,6399.58,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F020,What is the deal type between Reliance and CATL?,Technology Partnership,"The relationship type between Reliance and CATL is a **Technology Partnership** (or `Technology_Partnership`). 
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""Technology_Partnership"", ""company_name"": ""Reliance Industries"", ""chinese_partner"": ""CATL"", ...}`
+* Documents: `stock_company.csv`, `stock_report.csv`, and company profile overview for Reliance Industries (`stock_report.csv` / DNA India, 2025-08-20).",FACTUAL,CACHED,False,LOCAL,CACHED,False,0.9000,751.42,True,semantic,False,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F021,What is the status of the Reliance-CATL deal?,Under Discussion,"The relationship type between Reliance and CATL is a **Technology Partnership** (or `Technology_Partnership`). 
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""Technology_Partnership"", ""company_name"": ""Reliance Industries"", ""chinese_partner"": ""CATL"", ...}`
+* Documents: `stock_company.csv`, `stock_report.csv`, and company profile overview for Reliance Industries (`stock_report.csv` / DNA India, 2025-08-20).",FACTUAL,CACHED,False,LOCAL,CACHED,False,0.0082,769.19,True,semantic,False,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F022,What is the status of the JSW-Chery deal?,Confirmed,"Based on the provided context, the status of the JSW-Chery deal is **Confirmed**. 
+
+**Source References:**
+* Document: DNA India report (`report_date: 2025-08-20`), stating `status: Confirmed` for the JSW Group and Chery Automobile deal involving technology licensing for their new-energy venture.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,6157.31,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F023,What is the status of the Sona BLW-Jinnaite JV?,Abeyance,"Based on the provided context, the status of the Sona BLW-Jinnaite JV is **Abeyance** (or `JV_Abeyance`), with the proposed joint venture in China having been put in abeyance as of October 27, 2025.
+
+**Source References:**
+* Graph data: `{""relationship_type"": ""JV_Abeyance"", ""company_name"": ""Sona BLW"", ""chinese_partner"": ""Jinnaite_Machinery"", ...}` and `stock_report.csv` graph node indicating `deal_details: ""Proposed JV in China put in abeyance""`, `status: ""Abeyance""`, and `report_date: ""2025-10-27""`.
+* Documents: `stock_company.csv`, `stock_report.csv`, and MarketScreener report (`report_date: 2025-10-27`).",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,7102.16,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F024,What is the report date for the Reliance-CATL deal?,2025-08-20,"Based on the provided context, the report date for the Reliance-CATL deal is **2025-08-20**.
+
+**Source References:**
+* Documents: DNA India report and company overview records for Reliance Industries (`report_date: 2025-08-20`).",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,6167.10,False,,False,5,0,5,0.0000,0.0000,
+2026-09-26 17:01:18,F025,What is the report date for the JSW-SAIC stake increase talks?,2026-08-25,"Based on the provided context, the report date for the JSW-SAIC stake increase talks is **2026-08-25**.
+
+**Source References:**
+* Documents: *The Hindu* report mentioning that the SAIC stake increase talks are ""Under Discussion as of 2026-08-25"".",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,6595.14,False,,False,8,0,8,0.0000,0.0000,
+2026-09-26 17:01:18,F026,What is the report date for the Tata Motors-AESC deal?,2026-09-01,"Based on the provided context, the report date for the Tata Motors-AESC deal is **2026-09-01**.
+
+**Source References:**
+* Graph data: `{""company_name"": ""Tata Motors"", ""chinese_partner"": ""AESC Apollo"", ""status"": ""Confirmed"", ""report_date"": ""2026-09-01"", ...}` and `stock_report.csv` graph node.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,4840.64,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F027,Which source reported the JSW-Chery deal?,DNA India,"Based on the provided context, the status of the JSW-Chery deal is **Confirmed**. 
+
+**Source References:**
+* Document: DNA India report (`report_date: 2025-08-20`), stating `status: Confirmed` for the JSW Group and Chery Automobile deal involving technology licensing for their new-energy venture.",FACTUAL,CACHED,False,LOCAL,CACHED,False,0.9000,876.56,True,semantic,False,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F028,Which source reported the Tata Motors-Chery platform licensing?,Reuters,"Based on the provided context, the sources that reported the Tata Motors/Tata Group-Chery platform licensing are **Reuters** and **Mint**.
+
+**Source References:**
+* Reuters (`report_date: 2026-06-03`) for Tata Motors licensing the Chery platform for the Avinya premium EV brand and leveraging the Freelander platform from the Chery-JLR JV.
+* Mint (`report_date: 2026-07-08`) for the Tata Group passenger vehicle business leveraging the Chery platform for the Avinya premium EV range.
+* `stock_report.csv` (as referenced in the graph data).",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,7323.49,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F029,Which source reported the Starlit-Dynavolt JV?,VCCircle,"Based on the provided context, the Starlit-Dynavolt JV was reported by **VCCircle**.
+
+**Source References:**
+* Documents: *VCCircle* report detailing the Starlit Power Systems joint venture with Guangdong Dynavolt (report date: **2026-07-13**).",FACTUAL,RELATIONAL,False,LOCAL,HYBRID,False,0.9000,6977.17,False,,False,16,8,8,0.0000,0.0000,
+2026-09-26 17:01:18,F030,What is the Chinese presence level for Reliance Industries?,Medium,"Based on the provided context, the Chinese presence level for Reliance Industries is **Medium**.
+
+**Source References:**
+* Graph data: `{""company_name"": ""Reliance Industries"", ""chinese_presence_level"": ""Medium"", ""source"": ""Stock_industry_grouped_w_code.csv"", ...}`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,4036.22,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F031,What is the Chinese presence level for Adani Group?,High,"Based on the provided context, there is no explicit mention of the ""Chinese presence level"" for the Adani Group. The context only details discussions and partnerships with Chinese companies such as CATL and BYD, but does not state a specific presence level metric. 
+
+Therefore, the context is insufficient to answer the Chinese presence level for Adani Group.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0033,4493.79,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F032,What is the risk exposure for Reliance Industries?,Moderate,"Based on the provided context, the risk exposure for Reliance Industries is **Moderate**.
+
+**Source References:**
+* Graph data: `{""company_name"": ""Reliance Industries"", ""risk_exposure"": ""Moderate"", ""source"": ""Stock_industry_grouped_w_code.csv"", ...}`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,5398.43,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F033,What is the risk exposure for Adani Group?,High,"Based on the provided context, there is no mention of the risk exposure for the Adani Group. Therefore, the context is insufficient to answer this question.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0150,4496.34,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F034,What is the industry group for Tata Motors?,EV_Ecosystem,"I'm FinGraphRAG, a financial research assistant for Indian companies and their Chinese partners (e.g. Reliance-CATL, Bharti-Haier, Adani-BYD, Tata-Chery). I can't help with that - ask me about a company, partner, deal type, or sector from the knowledge base!",FACTUAL,UNKNOWN,False,LOCAL,,False,0.0000,2843.93,False,,True,0,0,0,0.0000,0.0000,
+2026-09-26 17:01:18,F035,What is the industry group for Sun Pharma?,Pharmaceuticals,"Based on the provided context, there is no mention of the industry group for Sun Pharma (only its industry is listed as ""Pharmaceuticals"" and sector as ""Healthcare""). Therefore, the context is insufficient to answer this question.",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,4385.13,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F036,What is the key player for Bharti Enterprises?,Haier_JV,"Based on the provided context, the key player for Bharti Enterprises is **Haier_JV**.
+
+**Source References:**
+* `Stock_industry_grouped_w_code.csv`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,13173.28,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F037,What is the key player for Dixon Technologies?,Vivo_Longcheer_Qtech_JV,"Based on the provided context, the key Chinese partners/players for Dixon Technologies are **Vivo**, **Longcheer**, **Qtech**, **Vivo India**, and **Qtech Group** (with the Chinese partner field also referencing **Vivo_Longcheer_Qtech**).
+
+**Source References:**
+* `stock_company.csv`
+* `stock_report.csv`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0768,5717.08,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F038,What is the key player for Ashok Leyland?,CALB_Group_Agreement,"Based on the provided context, the key player (or key players field) for Ashok Leyland is **CALB_Group_Agreement** (with **CALB_Group** also listed as the Chinese partner).
+
+**Source References:**
+* `Stock_industry_grouped_w_code.csv`
+* `stock_company.csv`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.9000,4467.77,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F039,How much did Tata pay for AESC technology?,£40M+,"Based on the provided context, the information regarding how much Tata paid for AESC technology is insufficient. 
+
+**Source References:**
+* `stock_report.csv`
+* `stock_company.csv`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0065,4334.95,False,,False,5,5,0,0.0000,0.0000,
+2026-09-26 17:01:18,F040,What is the stake percentage of AESC in Agratas?,12%,"Based on the provided context, the information regarding the stake percentage of AESC in Agratas is insufficient.
+
+**Source References:**
+* `stock_company.csv`
+* `Stock_industry_grouped_w_code.csv`",FACTUAL,FACTUAL,True,LOCAL,LOCAL,True,0.0000,5575.67,False,,False,5,5,0,0.0000,0.0000,

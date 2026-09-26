@@ -1,0 +1,22 @@
+timestamp,metric,value
+2026-09-26 17:01:18,total_tests,40
+2026-09-26 17:01:18,intent_accuracy,0.3750
+2026-09-26 17:01:18,plan_accuracy,0.3750
+2026-09-26 17:01:18,answer_relevance_avg,0.5233
+2026-09-26 17:01:18,retrieval_precision,0.0000
+2026-09-26 17:01:18,retrieval_recall,0.0000
+2026-09-26 17:01:18,f1_score,0.0000
+2026-09-26 17:01:18,cache_hit_rate,0.0750
+2026-09-26 17:01:18,blocked_rate,0.2750
+2026-09-26 17:01:18,avg_latency_ms,5059.56
+2026-09-26 17:01:18,avg_latency_cached_ms,799.06
+2026-09-26 17:01:18,avg_latency_uncached_ms,5405.00
+2026-09-26 17:01:18,rails_effectiveness,0.0000
+2026-09-26 17:01:18,intent_FACTUAL_count,40
+2026-09-26 17:01:18,intent_FACTUAL_accuracy,0.3750
+2026-09-26 17:01:18,intent_FACTUAL_relevance,0.5233
+2026-09-26 17:01:18,intent_FACTUAL_latency,5059.56
+2026-09-26 17:01:18,plan_LOCAL_count,40
+2026-09-26 17:01:18,plan_LOCAL_accuracy,0.3750
+2026-09-26 17:01:18,plan_LOCAL_relevance,0.5233
+2026-09-26 17:01:18,plan_LOCAL_latency,5059.56
