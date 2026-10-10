@@ -1,11 +1,16 @@
 import hashlib
+import sys
 import time
 from collections import Counter
+from pathlib import Path
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.config.settings import get_settings
 from src.orchestrator import FinGraphRAG
